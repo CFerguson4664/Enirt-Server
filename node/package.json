@@ -16,8 +16,5 @@
     "url": "https://github.com/CFerguson4664/Enirt-Server/issues"
   },
   "homepage": "https://github.com/CFerguson4664/Enirt-Server#readme",
-  "dependencies": {
-    "express": "^4.17.1",
-    "socket.io": "^2.3.0"
-  }
+  "dependencies": {}
 }
