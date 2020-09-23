@@ -43,8 +43,27 @@ function parseMessage(message) {
     //Split the message into the socket's id and the actual message
     var message_split = message.toString().split(',');
 
-    //Print the information to the console
-    console.log(message_split[1] + ' sent by ' + message_split[0]);
+    var socketId = message_split[0];
+    var command = message_split[1];
+    var data = message_split[2];
+
+    console.log('');
+    console.log('Socket Id: ' + socketId);
+    console.log('Command  : ' + command);
+    console.log('Data     : ' + data);
+
+    if(command == 0) {
+        //Print the information to the console
+        console.log(data + ' sent by ' + socketId);
+    }
+    else if(command == 1) {
+        console.log('Clock sync sent by ' + socketId);
+        clockSync(socketId);
+    }
+}
+
+function sendMessage(socketId) {
+
 }
 
 //Called if there is an error
@@ -133,4 +152,12 @@ function releaseSocketId(idIn) {
             ids = newIds;
         }
     });
+}
+
+function clockSync(socketId){
+    sockets.forEach(function(socket) {
+        if (socket[1] == socketId) {
+            socket[0].write(Date.now().toString())
+        }
+    })
 }
