@@ -12,9 +12,9 @@ const server = net.createServer(function(_socket){
 
     //These next lines configure event handlers for the socket
 
-    //Configure the 'end' even handler
+    //Configure the 'end' event handler
     //Runs when a client disconnects
-    _socket.on('end', () => {
+    _socket.on('end', function(){
         removeDeadSockets();
     });
 
@@ -43,36 +43,42 @@ function parseMessage(message) {
     //Split the message into the socket's id and the actual message
     var message_split = message.toString().split(',');
 
+    //Split the message into its parts
     var socketId = message_split[0];
     var command = message_split[1];
     var data = message_split[2];
 
+    //Log information about the message to the console for debugging
     console.log('');
     console.log('Socket Id: ' + socketId);
     console.log('Command  : ' + command);
     console.log('Data     : ' + data);
 
+    //Execute the correct function based on the command
     if(command == 0) {
         //Print the information to the console
         console.log(data + ' sent by ' + socketId);
     }
     else if(command == 1) {
+        //Exectue the clock sync function
         console.log('Clock sync sent by ' + socketId);
         clockSync(socketId);
     }
 }
 
-function sendMessage(socketId) {
-
+//Sends a message to the client with the given socketId
+function sendMessage(message, socketId) {
+    //TO DO
+    //Function to send a meeage to the client
 }
 
 //Called if there is an error
-server.on('error', (err) => {
+server.on('error', function(err){
     throw err;
 });
 
 //Creates the server that listens for new client connections
-server.listen(8124, () => {
+server.listen(8124, function(){
     console.log('server bound');
 });
 
@@ -154,9 +160,13 @@ function releaseSocketId(idIn) {
     });
 }
 
+//Called when a client sends the clockSync command
 function clockSync(socketId){
+    //Iterate through the list of sockets until we find the one that sent the message
     sockets.forEach(function(socket) {
+        //Once we find it
         if (socket[1] == socketId) {
+            //Reply with the current time
             socket[0].write(Date.now().toString())
         }
     })
