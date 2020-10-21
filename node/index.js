@@ -21,7 +21,7 @@ const server = net.createServer(function(_socket){
     //Configure the 'data' event handler
     //Runs when the socket receives data
     _socket.on('data', function(buf){
-        //Parse the message to determine which socket sent it and respont accordingly
+        //Parse the message to determine which socket sent it and respond accordingly
         parseMessage(buf);
     });
 
