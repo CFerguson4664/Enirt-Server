@@ -3,15 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Net.Sockets;
+using UnityEngine.Timeline;
 
 public class netComs : MonoBehaviour
 {
     public bool enableNetworking;
-    NetworkStream networkStream;
+    static NetworkStream networkStream;
     public String serverIpAddress;
     float time;
     float counter;
-    int socketId;
+    public static int socketId;
+    static long clockOffset = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -20,7 +22,7 @@ public class netComs : MonoBehaviour
         {
             networkStream = ConnectTCPClient(serverIpAddress, 8124);
             socketId = int.Parse(receiveMessage(networkStream));
-            clockSync(networkStream);
+            clockOffset = clockSync(networkStream);
         }
     }
 
@@ -40,7 +42,14 @@ public class netComs : MonoBehaviour
 
             if (networkStream.DataAvailable)
             {
-                Debug.Log(receiveMessage(networkStream));
+                string message = receiveMessage(networkStream);
+                Debug.Log("Recieved: " + message);
+
+                string[] parts = message.Split('|');
+                if(parts[0] == "0")
+                {
+                    playerSync.markerMove(parts[1]);
+                }
             }
         }
     }
@@ -56,7 +65,7 @@ public class netComs : MonoBehaviour
         return stream;
     }
 
-    void sendMessage(String message, NetworkStream stream)
+    static void sendMessage(String message, NetworkStream stream)
     {
         // Translate the passed message into ASCII and store it as a Byte array.
         Byte[] data = System.Text.Encoding.ASCII.GetBytes(socketId + "," + message);
@@ -65,7 +74,7 @@ public class netComs : MonoBehaviour
         stream.Write(data, 0, data.Length);
     }
 
-    String receiveMessage(NetworkStream stream)
+    static String receiveMessage(NetworkStream stream)
     {
         // Buffer to store the response bytes.
         Byte[] data = new Byte[4096];
@@ -80,6 +89,11 @@ public class netComs : MonoBehaviour
         responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
 
         return responseData;
+    }
+
+    public static void NBSendMessage(int command, String data)
+    {
+        sendMessage(command + "," + data, networkStream);
     }
 
     long clockSync(NetworkStream stream)
@@ -124,5 +138,10 @@ public class netComs : MonoBehaviour
         Debug.Log("The average Offset is: " + averageOffset + " ms");
 
         return averageOffset;
+    }
+
+    public static long GetTime()
+    {
+        return (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds + clockOffset;
     }
 }

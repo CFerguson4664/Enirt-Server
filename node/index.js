@@ -57,12 +57,22 @@ function parseMessage(message) {
     //Execute the correct function based on the command
     if(command == 0) {
         //Print the information to the console
-        console.log(data + ' sent by ' + socketId);
+        console.log('Command: Do nothing');
     }
     else if(command == 1) {
         //Exectue the clock sync function
-        console.log('Clock sync sent by ' + socketId);
+        console.log('Command: Clock Sync');
         clockSync(socketId);
+    }
+    else if(command == 2) {
+        //Relay message to all clients other than sender
+        console.log('Command: Relay to all other clients');
+        relayOthers(data,socketId);
+    }
+    else if(command == 50) {
+        //Relay message to all clients including sender
+        console.log('Command: Relay to all clients');
+        relayAll(data);
     }
 }
 
@@ -70,6 +80,7 @@ function parseMessage(message) {
 function sendMessage(message, socketId) {
     //TO DO
     //Function to send a meeage to the client
+
 }
 
 //Called if there is an error
@@ -170,4 +181,20 @@ function clockSync(socketId){
             socket[0].write(Date.now().toString())
         }
     })
+}
+
+//Relay the message to all connected clients 
+function relayAll(message) {
+    sockets.forEach(function(socket) {
+        socket[0].write(message.toString());
+    });
+}
+
+//Relay the message to all clients other than sender id
+function relayOthers(message, senderId) {
+    sockets.forEach(function(socket) {
+        if(socket[1] != senderId) {
+            socket[0].write(message.toString());
+        }
+    });
 }
