@@ -8,15 +8,19 @@ public class playerSync : MonoBehaviour
 {
     int counter = 0;
     public static GameObject marker;
-    static Vector3 previous = new Vector3(0, 0, 0);
+    static Vector3 previous;
     static long previousTime = 0;
-    static Vector3 current = new Vector3(0, 0, 0);
+    static Vector3 current;
     static long currentTime = 0;
 
     // Start is called before the first frame update
     void Start()
     {
         marker = GameObject.Find("Marker");
+        current = marker.transform.position;
+        previous = marker.transform.position;
+        previousTime = netComs.GetTime();
+        currentTime = netComs.GetTime() + 1;
     }
 
     // Update is called once per frame
@@ -36,11 +40,12 @@ public class playerSync : MonoBehaviour
     {
         float x = transform.position.x;
         float y = transform.position.y;
+        int size = marker.GetComponent<eatDots>().size;
         long currentTime = netComs.GetTime();
 
-        string message = "0|" + netComs.socketId + ":" + currentTime + ":" + x + ":" + y;
+        string message = "0|" + netComs.socketId + ":" + currentTime + ":" + x + ":" + y + ":" + size;
 
-        netComs.NBSendMessage(50, message);
+        netComs.NBSendMessage(2, message);
     }
 
     public static void markerMove(string message)
@@ -54,14 +59,15 @@ public class playerSync : MonoBehaviour
         float x = float.Parse(vals[2]);
         float y = float.Parse(vals[3]);
         float z = marker.transform.position.z;
+        int size = 50;//int.Parse(vals[4]);
+
+        marker.GetComponent<eatDots>().size = size;
 
         previousTime = currentTime;
         currentTime = time;
 
         previous = current;
         current = new Vector3(x,y,z);
-
-        marker.transform.position = current;
     }
 
     void interpolateMarker()
@@ -81,6 +87,6 @@ public class playerSync : MonoBehaviour
         float yPos = current.y + (yVelocity * timeSinceData);
         float zPos = current.z;
 
-        //marker.transform.position = new Vector3(xPos, yPos, zPos);
+        marker.transform.position = new Vector3(xPos, yPos, zPos);
     }
 }

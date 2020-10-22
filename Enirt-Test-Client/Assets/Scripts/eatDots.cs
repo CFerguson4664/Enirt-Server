@@ -9,13 +9,15 @@ public class eatDots : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        float radius = Mathf.Sqrt(size / 50f / Mathf.PI);
+        transform.localScale = new Vector3(radius + 0.5f, radius + 0.5f, transform.localScale.z);
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        float radius = Mathf.Sqrt(size / 50f / Mathf.PI);
+        transform.localScale = new Vector3(radius + 0.5f, radius + 0.5f, transform.localScale.z);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -25,9 +27,6 @@ public class eatDots : MonoBehaviour
         {
             Destroy(other.gameObject);
             size += 1;
-
-            float radius = Mathf.Sqrt(size / 50f / Mathf.PI);
-            transform.localScale = new Vector3(radius + 0.5f, radius + 0.5f, transform.localScale.z);
         }
     }
 }

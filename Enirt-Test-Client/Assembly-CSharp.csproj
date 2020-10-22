@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\dotCreator.cs" />
     <Compile Include="Assets\Scripts\eatDots.cs" />
+    <Compile Include="Assets\Scripts\eatPlayer.cs" />
     <Compile Include="Assets\Scripts\netComs.cs" />
     <Compile Include="Assets\Scripts\playerSync.cs" />
     <Reference Include="UnityEngine">
