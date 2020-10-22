@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class playerSync : MonoBehaviour
 {
-    int counter = 0;
+    float counter = 0;
     public static GameObject marker;
     static Vector3 previous;
     static long previousTime = 0;
@@ -26,12 +26,12 @@ public class playerSync : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(counter == 15)
+        if(counter >= 0.05f)
         {
             counter = 0;
             sendPosition();
         }
-        counter++;
+        counter += Time.deltaTime;
 
         interpolateMarker();
     }
@@ -40,7 +40,7 @@ public class playerSync : MonoBehaviour
     {
         float x = transform.position.x;
         float y = transform.position.y;
-        int size = marker.GetComponent<eatDots>().size;
+        int size = GetComponent<eatDots>().size;
         long currentTime = netComs.GetTime();
 
         string message = "0|" + netComs.socketId + ":" + currentTime + ":" + x + ":" + y + ":" + size;
@@ -59,7 +59,7 @@ public class playerSync : MonoBehaviour
         float x = float.Parse(vals[2]);
         float y = float.Parse(vals[3]);
         float z = marker.transform.position.z;
-        int size = 50;//int.Parse(vals[4]);
+        int size = int.Parse(vals[4]);
 
         marker.GetComponent<eatDots>().size = size;
 

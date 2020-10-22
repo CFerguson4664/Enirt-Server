@@ -480,7 +480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b88ce18d58f69049b6adee553576664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 50
+  size: 0
 --- !u!58 &534893413
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -578,7 +578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableNetworking: 1
-  serverIpAddress: 10.72.102.228
+  serverIpAddress: 127.0.0.1
 --- !u!1 &705563520
 GameObject:
   m_ObjectHideFlags: 0
