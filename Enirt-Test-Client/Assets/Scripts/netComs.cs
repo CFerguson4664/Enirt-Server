@@ -43,12 +43,18 @@ public class netComs : MonoBehaviour
             if (networkStream.DataAvailable)
             {
                 string message = receiveMessage(networkStream);
-                Debug.Log("Recieved: " + message);
 
-                string[] parts = message.Split('|');
-                if(parts[0] == "0")
+                string[] messages = message.Split('$');
+
+                foreach(string singleMessage in messages)
                 {
-                    playerSync.markerMove(parts[1]);
+                    Debug.Log("Recieved: " + message);
+
+                    string[] parts = message.Split('|');
+                    if (parts[0] == "0")
+                    {
+                        playerSync.markerMove(parts[1]);
+                    }
                 }
             }
         }
@@ -68,7 +74,7 @@ public class netComs : MonoBehaviour
     static void sendMessage(String message, NetworkStream stream)
     {
         // Translate the passed message into ASCII and store it as a Byte array.
-        Byte[] data = System.Text.Encoding.ASCII.GetBytes(socketId + "," + message);
+        Byte[] data = System.Text.Encoding.ASCII.GetBytes(socketId + "," + message + "$");
 
         // Send the message to the connected TcpServer.
         stream.Write(data, 0, data.Length);
