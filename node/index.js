@@ -41,43 +41,53 @@ const server = net.createServer(function(_socket){
 //Parse a message to determine which socket sent it
 function parseMessage(message) {
 
-    var messages = message.split("$");
+    var messages = message.toString().split("$");
+
+    console.log('Message is ' + message);
+    console.log('Messages is ' + messages);
 
     messages.forEach(function(singleMessage) {
+        if(singleMessage != '') {
+            console.log('Running messages foreach')
+            console.log('Single message is ' + singleMessage);
 
-        //Split the message into the socket's id and the actual message
-        var message_split = singleMessage.toString().split(',');
+            //Split the message into the socket's id and the actual message
+            var message_split = singleMessage.toString().split(',');
 
-        //Split the message into its parts
-        var socketId = message_split[0];
-        var command = message_split[1];
-        var data = message_split[2];
+            console.log(message_split);
 
-        //Log information about the message to the console for debugging
-        console.log('');
-        console.log('Socket Id: ' + socketId);
-        console.log('Command  : ' + command);
-        console.log('Data     : ' + data);
+            //Split the message into its parts
+            var socketId = message_split[0];
+            var command = message_split[1];
+            var data = message_split[2];
 
-        //Execute the correct function based on the command
-        if(command == 0) {
-            //Print the information to the console
-            console.log('Command: Do nothing');
-        }
-        else if(command == 1) {
-            //Exectue the clock sync function
-            console.log('Command: Clock Sync');
-            clockSync(socketId);
-        }
-        else if(command == 2) {
-            //Relay message to all clients other than sender
-            console.log('Command: Relay to all other clients');
-            relayOthers(data,socketId);
-        }
-        else if(command == 50) {
-            //Relay message to all clients including sender
-            console.log('Command: Relay to all clients');
-            relayAll(data);
+            //Log information about the message to the console for debugging
+            
+            console.log('Socket Id: ' + socketId);
+            console.log('Command  : ' + command);
+            console.log('Data     : ' + data);
+            console.log('');
+
+            //Execute the correct function based on the command
+            if(command == 0) {
+                //Print the information to the console
+                console.log('Command: Do nothing');
+            }
+            else if(command == 1) {
+                //Exectue the clock sync function
+                console.log('Command: Clock Sync');
+                clockSync(socketId);
+            }
+            else if(command == 2) {
+                //Relay message to all clients other than sender
+                console.log('Command: Relay to all other clients');
+                relayOthers(data,socketId);
+            }
+            else if(command == 50) {
+                //Relay message to all clients including sender
+                console.log('Command: Relay to all clients');
+                relayAll(data);
+            }
         }
     });
 }

@@ -21,7 +21,7 @@ public class netComs : MonoBehaviour
         if (enableNetworking)
         {
             networkStream = ConnectTCPClient(serverIpAddress, 8124);
-            socketId = int.Parse(receiveMessage(networkStream));
+            socketId = int.Parse(receiveMessage(networkStream)[0]);
             clockOffset = clockSync(networkStream);
         }
     }
@@ -42,18 +42,19 @@ public class netComs : MonoBehaviour
 
             if (networkStream.DataAvailable)
             {
-                string message = receiveMessage(networkStream);
+                string[] messages = receiveMessage(networkStream);
 
-                string[] messages = message.Split('$');
-
-                foreach(string singleMessage in messages)
+                foreach (string singleMessage in messages)
                 {
-                    Debug.Log("Recieved: " + message);
-
-                    string[] parts = message.Split('|');
-                    if (parts[0] == "0")
+                    if(singleMessage != "")
                     {
-                        playerSync.markerMove(parts[1]);
+                        Debug.Log("Recieved: " + singleMessage);
+
+                        string[] parts = singleMessage.Split('|');
+                        if (parts[0] == "0")
+                        {
+                            playerSync.markerMove(parts[1]);
+                        }
                     }
                 }
             }
@@ -80,19 +81,19 @@ public class netComs : MonoBehaviour
         stream.Write(data, 0, data.Length);
     }
 
-    static String receiveMessage(NetworkStream stream)
+    static String[] receiveMessage(NetworkStream stream)
     {
         // Buffer to store the response bytes.
         Byte[] data = new Byte[4096];
 
         // String to store the response ASCII representation.
-        String responseData = String.Empty;
+        String[] responseData;
 
         // Read the first batch of the TcpServer response bytes.
         Int32 bytes = stream.Read(data, 0, data.Length);
 
         // Translate the passed message into a string
-        responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+        responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes).Split('$');
 
         return responseData;
     }
@@ -112,7 +113,7 @@ public class netComs : MonoBehaviour
             long firstTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
 
             sendMessage(1 + ",0", stream);
-            String reply = receiveMessage(stream);
+            String reply = receiveMessage(stream)[0];
 
             long secondTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
 
