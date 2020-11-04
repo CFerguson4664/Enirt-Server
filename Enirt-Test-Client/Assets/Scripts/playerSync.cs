@@ -26,7 +26,7 @@ public class playerSync : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(counter >= 0.05f)
+        if(counter >= 0.01f)
         {
             counter = 0;
             sendPosition();
@@ -34,6 +34,11 @@ public class playerSync : MonoBehaviour
         counter += Time.deltaTime;
 
         interpolateMarker();
+    }
+
+    public static void threadedSync()
+    {
+
     }
 
     void sendPosition()
@@ -70,7 +75,7 @@ public class playerSync : MonoBehaviour
         current = new Vector3(x,y,z);
     }
 
-    void interpolateMarker()
+    static void interpolateMarker()
     {
         long time = netComs.GetTime();
         //Time since the position of the marker was last received
