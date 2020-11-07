@@ -24,6 +24,7 @@ public class netComs
     {
         if (enableNetworking)
         {
+            //Connect to the server
             networkStream = ConnectTCPClient(serverIpAddress, 8124);
             socketId = int.Parse(receiveMessages(networkStream)[0]);
             clockOffset = clockSync(networkStream);
@@ -31,6 +32,7 @@ public class netComs
             NBSendMessage(3, "0");
         }
 
+        //Start the networking thread
         enableNet = enableNetworking;
         NetworkThread = new Thread(ThreadedSync);
         NetworkThread.Start();
@@ -38,6 +40,7 @@ public class netComs
 
     public static void HaltImmediately()
     {
+        //Halt the networking thread and close the connection to the server
         Debug.Log("Halt");
         NetworkThread.Abort();
         networkTimer.Close();
@@ -56,22 +59,27 @@ public class netComs
         networkTimer.Enabled = true;
     }
 
-    //Pulled from C# documentation
+    //Pulled from C# documentation, runs every 20ms
     static void OnSync(System.Object source, ElapsedEventArgs e)
     {
         Debug.Log("On net");
 
-
+        //run only if networking is enabled
         if (enableNet)
         {
+            //If there is data available
             if (networkStream.DataAvailable)
             {
+                //receive all waiting messages
                 string[] messages = receiveMessages(networkStream);
 
+                //iterate through each message
                 foreach (string singleMessage in messages)
                 {
+                    //If the messsage is not empty
                     if (singleMessage != "")
                     {
+                        //process the command
                         string[] parts = singleMessage.Split('|');
                         if (parts[0] == "0")
                         {
@@ -180,6 +188,7 @@ public class netComs
 
     public static long GetTime()
     {
+        //Returns the time on the server in ms since epoc in UTC
         return (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds + clockOffset;
     }
 }

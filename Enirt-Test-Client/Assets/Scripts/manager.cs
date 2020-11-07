@@ -7,6 +7,9 @@ public class manager : MonoBehaviour
     netComs net = new netComs();
     public bool enableNetworking;
     public string IPAddress;
+
+    //This script is used to allow uniy to start and stop the asynchronous networking functionalities
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,12 +17,7 @@ public class manager : MonoBehaviour
         net.Init(enableNetworking, IPAddress);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    //Called when the application closes, built in unity event handler
     void OnApplicationQuit()
     {
         playerSync.HaltImmediately();
