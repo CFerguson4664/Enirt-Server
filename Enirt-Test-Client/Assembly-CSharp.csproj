@@ -63,12 +63,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\MK2\objectManager.cs" />
+    <Compile Include="Assets\Scripts\MK2\playerSync.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\dotCreator.cs" />
     <Compile Include="Assets\Scripts\eatDots.cs" />
     <Compile Include="Assets\Scripts\eatPlayer.cs" />
+    <Compile Include="Assets\Scripts\manager.cs" />
     <Compile Include="Assets\Scripts\netComs.cs" />
-    <Compile Include="Assets\Scripts\playerSync.cs" />
     <Reference Include="UnityEngine">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.4.10f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>

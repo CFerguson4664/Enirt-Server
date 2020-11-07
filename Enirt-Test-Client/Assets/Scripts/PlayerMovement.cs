@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -12,6 +13,11 @@ public class PlayerMovement : MonoBehaviour
     public float rightBound;
     public float topBound;
     public float bottomBound;
+
+
+    public static Vector3 currentPostiton;
+    public static int currentSize;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -56,5 +62,8 @@ public class PlayerMovement : MonoBehaviour
                 transform.position = new Vector3(transform.position.x, bottomBound, transform.position.z);
             }
         }
+
+        currentPostiton = transform.position;
+        currentSize = GetComponent<eatDots>().size;
     }
 }

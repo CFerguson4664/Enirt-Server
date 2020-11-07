@@ -34,7 +34,7 @@ const server = net.createServer(function(_socket){
 
         //Store the socket and the random id as a pair
         console.log(rand);
-        sockets.push([_socket,rand]);
+        sockets.push([_socket,rand,false]);
     });
 });
 
@@ -43,18 +43,18 @@ function parseMessage(message) {
 
     var messages = message.toString().split("$");
 
-    console.log('Message is ' + message);
-    console.log('Messages is ' + messages);
+    // console.log('Message is ' + message);
+    // console.log('Messages is ' + messages);
 
     messages.forEach(function(singleMessage) {
         if(singleMessage != '') {
-            console.log('Running messages foreach')
-            console.log('Single message is ' + singleMessage);
+            // console.log('Running messages foreach')
+            // console.log('Single message is ' + singleMessage);
 
             //Split the message into the socket's id and the actual message
             var message_split = singleMessage.toString().split(',');
 
-            console.log(message_split);
+            // console.log(message_split);
 
             //Split the message into its parts
             var socketId = message_split[0];
@@ -63,29 +63,34 @@ function parseMessage(message) {
 
             //Log information about the message to the console for debugging
             
-            console.log('Socket Id: ' + socketId);
-            console.log('Command  : ' + command);
-            console.log('Data     : ' + data);
-            console.log('');
+            // console.log('Socket Id: ' + socketId);
+            // console.log('Command  : ' + command);
+            // console.log('Data     : ' + data);
+            // console.log('');
 
             //Execute the correct function based on the command
             if(command == 0) {
                 //Print the information to the console
-                console.log('Command: Do nothing');
+                // console.log('Command: Do nothing');
             }
             else if(command == 1) {
                 //Exectue the clock sync function
-                console.log('Command: Clock Sync');
+                // console.log('Command: Clock Sync');
                 clockSync(socketId);
             }
             else if(command == 2) {
                 //Relay message to all clients other than sender
-                console.log('Command: Relay to all other clients');
+                // console.log('Command: Relay to all other clients');
                 relayOthers(data,socketId);
+            }
+            else if(command == 3) {
+                //Log that this socket is redy to recieve player data
+                // console.log('Command: Socket Ready');
+                readySocket(socketId);
             }
             else if(command == 50) {
                 //Relay message to all clients including sender
-                console.log('Command: Relay to all clients');
+                // console.log('Command: Relay to all clients');
                 relayAll(data);
             }
         }
@@ -187,6 +192,18 @@ function releaseSocketId(idIn) {
     });
 }
 
+function readySocket(socketId) {
+    console.log('client ' + socketId + ' ready');
+    //Iterate through the list of sockets until we find the one that sent the message
+    sockets.forEach(function(socket) {
+        //Once we find it
+        if (socket[1] == socketId) {
+            //Set the socket to ready
+            socket[3] = true;
+        }
+    })
+}
+
 //Called when a client sends the clockSync command
 function clockSync(socketId){
     //Iterate through the list of sockets until we find the one that sent the message
@@ -202,15 +219,25 @@ function clockSync(socketId){
 //Relay the message to all connected clients 
 function relayAll(message) {
     sockets.forEach(function(socket) {
-        socket[0].write(message.toString() + "$");
+        if(!socket[0].destroyed && socket[3]) {
+            socket[0].write(message.toString() + "$");
+        }
     });
 }
 
 //Relay the message to all clients other than sender id
 function relayOthers(message, senderId) {
     sockets.forEach(function(socket) {
-        if(socket[1] != senderId) {
-            socket[0].write(message.toString() + "$");
+        if(!socket[0].destroyed  && socket[3]) {
+            if(socket[1] != senderId) {
+                socket[0].write(message.toString() + "$");
+            }
         }
     });
 }
+
+setTimeout(function() { 
+    if(sockets.length > 0) {
+        removeDeadSockets(); 
+    }
+}, 1000)

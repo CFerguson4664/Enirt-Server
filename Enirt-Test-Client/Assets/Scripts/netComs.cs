@@ -4,56 +4,78 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Net.Sockets;
 using UnityEngine.Timeline;
+using System.Timers;
+using System.Threading;
 
-public class netComs : MonoBehaviour
+public class netComs
 {
     public bool enableNetworking;
+    static bool enableNet;
     static NetworkStream networkStream;
-    public String serverIpAddress;
-    float time;
-    float counter;
+    static TcpClient client;
     public static int socketId;
     static long clockOffset = 0;
 
-    // Start is called before the first frame update
-    void Start()
+    static System.Timers.Timer networkTimer;
+    static Thread NetworkThread;
+
+
+    public void Init(bool enableNetworking, string serverIpAddress)
     {
         if (enableNetworking)
         {
             networkStream = ConnectTCPClient(serverIpAddress, 8124);
-            socketId = int.Parse(receiveMessage(networkStream)[0]);
+            socketId = int.Parse(receiveMessages(networkStream)[0]);
             clockOffset = clockSync(networkStream);
+            //Tell the server we are ready to begin receiving player data
+            NBSendMessage(3, "0");
         }
+
+        enableNet = enableNetworking;
+        NetworkThread = new Thread(ThreadedSync);
+        NetworkThread.Start();
     }
 
-    // Update is called once per frame
-    void Update()
+    public static void HaltImmediately()
     {
-        if(enableNetworking)
+        Debug.Log("Halt");
+        NetworkThread.Abort();
+        networkTimer.Close();
+        networkStream.Close();
+        client.Close();
+    }
+
+    //This function contains the code to allow another thread to handle networking
+    static void ThreadedSync()
+    {
+        // Create a timer with a two second interval.
+        networkTimer = new System.Timers.Timer(20);
+        // Hook up the Elapsed event for the timer. 
+        networkTimer.Elapsed += OnSync;
+        networkTimer.AutoReset = true;
+        networkTimer.Enabled = true;
+    }
+
+    //Pulled from C# documentation
+    static void OnSync(System.Object source, ElapsedEventArgs e)
+    {
+        Debug.Log("On net");
+
+
+        if (enableNet)
         {
-            time += Time.deltaTime;
-
-            if (time > 1)
-            {
-                counter += 1;
-                sendMessage(0 + ",This is a message " + counter, networkStream);
-                time -= 1;
-            }
-
             if (networkStream.DataAvailable)
             {
-                string[] messages = receiveMessage(networkStream);
+                string[] messages = receiveMessages(networkStream);
 
                 foreach (string singleMessage in messages)
                 {
-                    if(singleMessage != "")
+                    if (singleMessage != "")
                     {
-                        Debug.Log("Recieved: " + singleMessage);
-
                         string[] parts = singleMessage.Split('|');
                         if (parts[0] == "0")
                         {
-                            playerSync.markerMove(parts[1]);
+                            playerSync.ReceiveMessage(parts[1]);
                         }
                     }
                 }
@@ -61,10 +83,17 @@ public class netComs : MonoBehaviour
         }
     }
 
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
     NetworkStream ConnectTCPClient(String serverAddress, int port)
     {
         // Create a TcpClient.
-        TcpClient client = new TcpClient(serverAddress, port);
+        client = new TcpClient(serverAddress, port);
 
         // Get a client stream for reading and writing.
         NetworkStream stream = client.GetStream();
@@ -74,6 +103,7 @@ public class netComs : MonoBehaviour
 
     static void sendMessage(String message, NetworkStream stream)
     {
+        Debug.Log("Sending message");
         // Translate the passed message into ASCII and store it as a Byte array.
         Byte[] data = System.Text.Encoding.ASCII.GetBytes(socketId + "," + message + "$");
 
@@ -81,7 +111,7 @@ public class netComs : MonoBehaviour
         stream.Write(data, 0, data.Length);
     }
 
-    static String[] receiveMessage(NetworkStream stream)
+    static String[] receiveMessages(NetworkStream stream)
     {
         // Buffer to store the response bytes.
         Byte[] data = new Byte[4096];
@@ -100,6 +130,7 @@ public class netComs : MonoBehaviour
 
     public static void NBSendMessage(int command, String data)
     {
+        Debug.Log("SendMessage");
         sendMessage(command + "," + data, networkStream);
     }
 
@@ -113,7 +144,7 @@ public class netComs : MonoBehaviour
             long firstTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
 
             sendMessage(1 + ",0", stream);
-            String reply = receiveMessage(stream)[0];
+            String reply = receiveMessages(stream)[0];
 
             long secondTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
 
