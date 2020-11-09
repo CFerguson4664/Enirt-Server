@@ -9,9 +9,21 @@ public class objectManager : MonoBehaviour
     public static GameObject marker;
     public GameObject markerObj;
 
+    public static GameObject orb;
+    public GameObject OrbObj;
+
     //Store the current data for each player in a dictionary indexed with the player ids.
     //The data in this is updated by playerSync.
     public static Dictionary<int,PlayerData> players = new Dictionary<int,PlayerData>();
+
+
+    //Stores the orbs currently being displayed
+    public static Dictionary<long, OrbData> currentOrbs = new Dictionary<long, OrbData>();
+
+    //Stores the ids of the orbs to be removed the next cycle
+    public static List<OrbData> addOrbs = new List<OrbData>();
+    //Stores the ids of the orbs to be added the next cycle
+    public static List<long> removeOrbs = new List<long>();
 
     // Start is called before the first frame update
     void Start()
@@ -25,12 +37,45 @@ public class objectManager : MonoBehaviour
         //Update the graphics for every opponent
         foreach (PlayerData player in players.Values)
         {
-            interpolatePlayer(player);
+            InterpolatePlayer(player);
+        }
+
+        AddOrbs();
+        RemoveOrbs();
+    }
+
+    static void AddOrbs()
+    {
+        long time = netComs.GetTime();
+        foreach (OrbData orbData in addOrbs)
+        {
+            if(orbData.Id < time)
+            {
+                if (!currentOrbs.ContainsKey(orbData.Id))
+                {
+                    orbData.gameObject = Instantiate(orb, new Vector3(orbData.XPos, orbData.YPos, orbData.ZPos), Quaternion.identity);
+                    currentOrbs.Add(orbData.Id, orbData);
+                }
+            }
+        }
+    }
+
+    static void RemoveOrbs()
+    {
+        foreach (long Id in removeOrbs)
+        {
+            if (currentOrbs.ContainsKey(Id))
+            {
+                if(currentOrbs[Id].gameObject != null) {
+                    Destroy(currentOrbs[Id].gameObject);
+                }
+                currentOrbs.Remove(Id);
+            }
         }
     }
 
 
-    static void interpolatePlayer(PlayerData player)
+    static void InterpolatePlayer(PlayerData player)
     {
         long time = netComs.GetTime();
         //Time since the position of the player was last received
@@ -119,5 +164,27 @@ public class PlayerData
         XPos = x;
         YPos = y;
         ZPos = z;
+    }
+}
+
+public class OrbData
+{
+    public long Id { get; set; }
+    public float XPos { get; set; }
+    public float YPos { get; set; }
+    public float ZPos { get; set; }
+    public GameObject gameObject { get; set; }
+
+    public OrbData()
+    {
+
+    }
+
+    public OrbData(long IdIn, float XPosIn, float YPosIn)
+    {
+        Id = IdIn;
+        XPos = XPosIn;
+        YPos = YPosIn;
+        ZPos = 0;
     }
 }

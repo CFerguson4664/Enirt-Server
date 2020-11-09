@@ -1,5 +1,8 @@
 const net = require('net');
 
+const orbsPerSecond = 10;
+const orbsFullSyncDelay = 10000;
+
 //Stores all of the connected sockets and their ids
 var sockets = [];
 
@@ -200,6 +203,8 @@ function readySocket(socketId) {
         if (socket[1] == socketId) {
             //Set the socket to ready
             socket[3] = true;
+            //Request a client to send the current list of orbs
+            requestFullOrbSync();
         }
     })
 }
@@ -236,8 +241,40 @@ function relayOthers(message, senderId) {
     });
 }
 
+function requestFullOrbSync() {
+    var syncMessage = '2|sync'
+    if(sockets.length > 1){
+        sockets[0][0].write(syncMessage + "$");
+    }
+}
+
 setTimeout(function() { 
     if(sockets.length > 0) {
         removeDeadSockets(); 
     }
-}, 1000)
+}, 1000);
+
+setTimeout(function() {
+    var time  = Date.now();
+
+    var randMessage = '1|'
+    randMessage +=  Math.random().toFixed(2);
+    randMessage += ":" + Math.random().toFixed(2);
+    randMessage += ":" + time.toString();
+
+    //Send two random numbers for each orb
+    for (var i = 1; i < orbsPerSecond; i++) {
+        randMessage += "?" + Math.random().toFixed(2);
+        randMessage += ":" + Math.random().toFixed(2);
+        randMessage += ":" + (time + (1000 / orbsPerSecond) * i).toFixed(0);
+    }
+
+    //Send the numbers to all of the sockets
+    sockets.forEach(function(socket) {
+        if(!socket[0].destroyed && socket[3]) {
+            socket[0].write(randMessage + "$");
+        }
+    });
+}, 1000);
+
+setTimeout(requestFullOrbSync(), orbsFullSyncDelay);

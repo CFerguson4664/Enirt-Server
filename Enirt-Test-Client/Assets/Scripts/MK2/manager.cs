@@ -8,11 +8,20 @@ public class manager : MonoBehaviour
     public bool enableNetworking;
     public string IPAddress;
 
+    public static int Width;
+    public static int Height;
+
+    public int boardWidth;
+    public int boardHeight;
+
+
     //This script is used to allow uniy to start and stop the asynchronous networking functionalities
 
     // Start is called before the first frame update
     void Start()
     {
+        Width = boardWidth;
+        Height = boardHeight;
         playerSync.Init();
         net.Init(enableNetworking, IPAddress);
     }

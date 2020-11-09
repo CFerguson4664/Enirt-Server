@@ -89,42 +89,34 @@ public class playerSync
     {
         beingRead = incomingMessages;
         incomingMessages = new List<string>();
-        try
+        Debug.Log(beingRead.Count);
+        foreach (string message in beingRead)
         {
-            Debug.Log(beingRead.Count);
-            foreach (string message in beingRead)
+            string[] vals = message.Split(':');
+
+            Debug.Log("Message: " + message);
+            Debug.Log("Vals 0: " + vals[0]);
+
+            int playerId = int.Parse(vals[0]);
+            long time = long.Parse(vals[1]);
+            float x = float.Parse(vals[2]);
+            float y = float.Parse(vals[3]);
+            float z = 0f;
+            int size = int.Parse(vals[4]);
+
+
+            if(objectManager.players.ContainsKey(playerId))
             {
-                string[] vals = message.Split(':');
+                Debug.Log("Updating data");
+                PlayerData currentData = objectManager.players[playerId];
 
-                Debug.Log("Message: " + message);
-                Debug.Log("Vals 0: " + vals[0]);
-
-                int playerId = int.Parse(vals[0]);
-                long time = long.Parse(vals[1]);
-                float x = float.Parse(vals[2]);
-                float y = float.Parse(vals[3]);
-                float z = 0f;
-                int size = int.Parse(vals[4]);
-
-
-                if(objectManager.players.ContainsKey(playerId))
-                {
-                    Debug.Log("Updating data");
-                    PlayerData currentData = objectManager.players[playerId];
-
-                    currentData.UpdateData(time, size, x, y, z);
-                }
-                else
-                {
-                    Debug.Log("Creating new data");
-                    objectManager.players.Add(playerId, new PlayerData(playerId, time, size, x, y, z));
-                }
+                currentData.UpdateData(time, size, x, y, z);
             }
-        } 
-        catch (Exception ex)
-        {
-            Debug.Log(ex.Message);
-            Debug.Log(ex.StackTrace);
+            else
+            {
+                Debug.Log("Creating new data");
+                objectManager.players.Add(playerId, new PlayerData(playerId, time, size, x, y, z));
+            }
         }
     }
 }
