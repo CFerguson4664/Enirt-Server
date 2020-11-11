@@ -55,7 +55,6 @@ public class playerSync
     //Pulled from C# documentation
     private static void OnSync(System.Object source, ElapsedEventArgs e)
     {
-        Debug.Log("On sync");
         SendPosition();
         ReadMessages();
     }
@@ -89,7 +88,6 @@ public class playerSync
     {
         beingRead = incomingMessages;
         incomingMessages = new List<string>();
-        Debug.Log(beingRead.Count);
         foreach (string message in beingRead)
         {
             string[] vals = message.Split(':');

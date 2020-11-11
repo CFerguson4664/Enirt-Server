@@ -23,6 +23,7 @@ public class manager : MonoBehaviour
         Width = boardWidth;
         Height = boardHeight;
         playerSync.Init();
+        orbSync.Init();
         net.Init(enableNetworking, IPAddress);
     }
 
@@ -31,6 +32,7 @@ public class manager : MonoBehaviour
     {
         playerSync.HaltImmediately();
         netComs.HaltImmediately();
+        orbSync.HaltImmediately();
     }
 
 }

@@ -1,7 +1,7 @@
 const net = require('net');
 
-const orbsPerSecond = 10;
-const orbsFullSyncDelay = 10000;
+const orbsPerSecond = 5;
+const orbsFullSyncDelay = 20000;
 
 //Stores all of the connected sockets and their ids
 var sockets = [];
@@ -242,19 +242,22 @@ function relayOthers(message, senderId) {
 }
 
 function requestFullOrbSync() {
+    console.log('Requesting Sync')
+
     var syncMessage = '2|sync'
-    if(sockets.length > 1){
+    if(sockets.length > 0){
         sockets[0][0].write(syncMessage + "$");
     }
 }
 
-setTimeout(function() { 
+setInterval(function() { 
     if(sockets.length > 0) {
         removeDeadSockets(); 
     }
 }, 1000);
 
-setTimeout(function() {
+setInterval(function() {
+
     var time  = Date.now();
 
     var randMessage = '1|'
@@ -271,10 +274,11 @@ setTimeout(function() {
 
     //Send the numbers to all of the sockets
     sockets.forEach(function(socket) {
+        console.log('Sending orb loop')
         if(!socket[0].destroyed && socket[3]) {
             socket[0].write(randMessage + "$");
         }
     });
 }, 1000);
 
-setTimeout(requestFullOrbSync(), orbsFullSyncDelay);
+setInterval(function() { requestFullOrbSync() }, orbsFullSyncDelay);

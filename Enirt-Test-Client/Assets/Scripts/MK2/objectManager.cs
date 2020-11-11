@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using UnityEngine;
 
 public class objectManager : MonoBehaviour
@@ -10,7 +12,7 @@ public class objectManager : MonoBehaviour
     public GameObject markerObj;
 
     public static GameObject orb;
-    public GameObject OrbObj;
+    public GameObject orbObj;
 
     //Store the current data for each player in a dictionary indexed with the player ids.
     //The data in this is updated by playerSync.
@@ -22,12 +24,16 @@ public class objectManager : MonoBehaviour
 
     //Stores the ids of the orbs to be removed the next cycle
     public static List<OrbData> addOrbs = new List<OrbData>();
+    public static List<OrbData> addOrbsActive = new List<OrbData>();
+
     //Stores the ids of the orbs to be added the next cycle
     public static List<long> removeOrbs = new List<long>();
+    public static List<long> removeOrbsActive = new List<long>();
 
     // Start is called before the first frame update
     void Start()
     {
+        orb = orbObj;
         marker = markerObj;
     }
 
@@ -46,23 +52,38 @@ public class objectManager : MonoBehaviour
 
     static void AddOrbs()
     {
+        addOrbsActive = addOrbs;
+        addOrbs = new List<OrbData>();
+
         long time = netComs.GetTime();
-        foreach (OrbData orbData in addOrbs)
+        foreach (OrbData orbData in addOrbsActive)
         {
             if(orbData.Id < time)
             {
                 if (!currentOrbs.ContainsKey(orbData.Id))
                 {
                     orbData.gameObject = Instantiate(orb, new Vector3(orbData.XPos, orbData.YPos, orbData.ZPos), Quaternion.identity);
+                    orbData.gameObject.GetComponent<orbData>().Id = orbData.Id;
                     currentOrbs.Add(orbData.Id, orbData);
                 }
+                else
+                {
+                    addOrbs.Add(orbData);
+                }
+            }
+            else
+            {
+                addOrbs.Add(orbData);
             }
         }
     }
 
     static void RemoveOrbs()
     {
-        foreach (long Id in removeOrbs)
+        removeOrbsActive = removeOrbs;
+        removeOrbs = new List<long>();
+
+        foreach (long Id in removeOrbsActive)
         {
             if (currentOrbs.ContainsKey(Id))
             {

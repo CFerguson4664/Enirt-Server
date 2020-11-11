@@ -62,8 +62,6 @@ public class netComs
     //Pulled from C# documentation, runs every 20ms
     static void OnSync(System.Object source, ElapsedEventArgs e)
     {
-        Debug.Log("On net");
-
         //run only if networking is enabled
         if (enableNet)
         {
@@ -84,6 +82,18 @@ public class netComs
                         if (parts[0] == "0")
                         {
                             playerSync.ReceiveMessage(parts[1]);
+                        }
+                        else if (parts[0] == "1")
+                        {
+                            orbSync.ReceiveOrbMessage(parts[1]);
+                        }
+                        else if (parts[0] == "2")
+                        {
+                            orbSync.ReceiveSyncRequestMessage(parts[1]);
+                        }
+                        else if (parts[0] == "3")
+                        {
+                            orbSync.ReceiveSyncMessage(parts[1]);
                         }
                     }
                 }
@@ -111,7 +121,6 @@ public class netComs
 
     static void sendMessage(String message, NetworkStream stream)
     {
-        Debug.Log("Sending message");
         // Translate the passed message into ASCII and store it as a Byte array.
         Byte[] data = System.Text.Encoding.ASCII.GetBytes(socketId + "," + message + "$");
 
@@ -122,7 +131,7 @@ public class netComs
     static String[] receiveMessages(NetworkStream stream)
     {
         // Buffer to store the response bytes.
-        Byte[] data = new Byte[4096];
+        Byte[] data = new Byte[40000];
 
         // String to store the response ASCII representation.
         String[] responseData;
@@ -138,7 +147,6 @@ public class netComs
 
     public static void NBSendMessage(int command, String data)
     {
-        Debug.Log("SendMessage");
         sendMessage(command + "," + data, networkStream);
     }
 

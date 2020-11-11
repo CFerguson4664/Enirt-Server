@@ -380,7 +380,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 538632375}
-  - component: {fileID: 538632374}
   - component: {fileID: 538632377}
   - component: {fileID: 538632378}
   m_Layer: 0
@@ -390,21 +389,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &538632374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 538632373}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2c152860ea222446a8846aea7743f8d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  orb: {fileID: 4223203312260077131, guid: b119b2ace8cc8f84ca29f04f325eca5e, type: 3}
-  player: {fileID: 43526240}
-  spawnDelay: 0.1
 --- !u!4 &538632375
 Transform:
   m_ObjectHideFlags: 0
@@ -433,6 +417,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableNetworking: 1
   IPAddress: 127.0.0.1
+  boardWidth: 96
+  boardHeight: 96
 --- !u!114 &538632378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -447,6 +433,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   markerObj: {fileID: 3716766472000882435, guid: 3dd9195b4db0c7d44929d1b82949533d,
     type: 3}
+  orbObj: {fileID: 4223203312260077131, guid: b119b2ace8cc8f84ca29f04f325eca5e, type: 3}
 --- !u!1 &705563520
 GameObject:
   m_ObjectHideFlags: 0

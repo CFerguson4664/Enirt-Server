@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Timers;
 using System.Threading;
 using System;
+using System.Linq;
 
 public class orbSync
 {
@@ -20,6 +21,10 @@ public class orbSync
     //Store the incoming messages that we need to deal with
     static List<String> incomingSyncMessages = new List<string>();
     static List<String> beingReadSync = new List<string>();
+
+    //Store the incoming messages that we need to deal with
+    static List<String> incomingSyncRequestMessages = new List<string>();
+    static List<String> beingReadSyncRequest = new List<string>();
 
     // Start is called before the first frame update
     public static void Init()
@@ -54,6 +59,14 @@ public class orbSync
         }
     }
 
+    public static void ReceiveSyncRequestMessage(string message)
+    {
+        if (active)
+        {
+            incomingSyncRequestMessages.Add(message);
+        }
+    }
+
     //This function contains the code to allow another thread to handle networking
     public static void ThreadedSync()
     {
@@ -68,42 +81,107 @@ public class orbSync
     //Pulled from C# documentation
     private static void OnSync(System.Object source, ElapsedEventArgs e)
     {
-        Debug.Log("On sync");
         ReadMessagesOrb();
+        ReadMessagesSync();
+        ReadMessagesSyncRequest();
     }
 
-    /*static void SendPosition()
+    static void ReadMessagesSyncRequest()
     {
-        try
-        {
-            Vector3 playerPos = PlayerMovement.currentPostiton;
+        beingReadSyncRequest = incomingSyncRequestMessages;
+        incomingSyncRequestMessages = new List<string>();
 
-            //Get the position and size of the player object for this client
-            float x = playerPos.x;
-            float y = playerPos.y;
-            int size = PlayerMovement.currentSize;
-            long currentTime = netComs.GetTime();
+        foreach (string request in beingReadSyncRequest)
+        {
+            Debug.Log("Generating Sync Data");
 
             //Create the message string
-            string message = "0|" + netComs.socketId + ":" + currentTime + ":" + x + ":" + y + ":" + size;
+            string message = "3|";
+
+            var currentIds = objectManager.currentOrbs.Keys.ToArray(); //To array is used in case the source needs to be modified
+            int counter = 0;
+
+            foreach (long Id in currentIds)
+            {
+                //Limit the number of orbs in game to 1000, because the message size otherwise might get huge; also make sure the message fits in our buffer
+                if(counter >= 1000 || message.Length > 39000)
+                {
+                    break;
+                }
+
+                OrbData current = objectManager.currentOrbs[Id];
+                message += current.XPos + ":";
+                message += current.YPos + ":";
+                message += current.Id + "?";
+                counter++;
+            }
+
+            //Remove the trailing '?'
+            message = message.Trim('?');
+
 
             //Send the message to the server
-            netComs.NBSendMessage(2, message);
+            if(counter >= 1000 || message.Length > 39000)
+            {
+                netComs.NBSendMessage(50, message);
+            }
+            else
+            {
+                netComs.NBSendMessage(2, message);
+            }
         }
-        catch (Exception ex)
+    }
+
+    static void ReadMessagesSync() 
+    {
+        
+        beingReadSync = incomingSyncMessages;
+        incomingSyncMessages = new List<string>();
+
+        Dictionary<long, OrbData> incomingData = new Dictionary<long, OrbData>();
+
+        foreach (string message in beingReadSync)
         {
-            Debug.Log(ex.Message);
-            Debug.Log(ex.StackTrace);
+            Debug.Log("Processing Sync Data");
+            string[] orbs = message.Split('?');
+
+            foreach (string orb in orbs)
+            {
+                string[] data = orb.Split(':');
+
+                float XPos = float.Parse(data[0]);
+                float YPos = float.Parse(data[1]);
+                long Id = long.Parse(data[2]);
+
+                incomingData.Add(Id,new OrbData(Id, XPos, YPos));
+            }
+
+            //These create IEnumerable objects that can then be converted into arrays. 
+            var currentIds = objectManager.currentOrbs.Keys.ToArray(); //To array is used in case the source needs to be modified
+            var incomingIds = incomingData.Keys; //To array is not used here because the source will not be modified
+
+            //Removes all items in the second array from the first array
+            var toAdd = incomingIds.Except(currentIds);
+            var toRemove = currentIds.Except(incomingIds);
+
+            foreach (long Id in toAdd)
+            {
+                objectManager.addOrbs.Add(incomingData[Id]);
+            }
+
+            //Append all of the ids in to remove to the list in object manager
+            objectManager.removeOrbs.Concat(toRemove);
         }
-    }*/
+    }
+    
 
     static void ReadMessagesOrb()
     {
         beingReadOrb = incomingOrbMessages;
         incomingOrbMessages = new List<string>();
-        Debug.Log(beingReadOrb.Count);
         foreach (string message in beingReadOrb)
         {
+            
             string[] orbs = message.Split('?');
 
             foreach(string orb in orbs)
@@ -113,6 +191,9 @@ public class orbSync
                 float XPos = float.Parse(data[0]) * manager.Width - (0.5f * manager.Width);
                 float YPos = float.Parse(data[1]) * manager.Height- (0.5f * manager.Height);
                 long Id = long.Parse(data[2]);
+
+
+                //Debug.Log("Orb at (" + XPos + "," + YPos + ") and time " + Id);
 
                 objectManager.addOrbs.Add(new OrbData(Id, XPos, YPos));
             }

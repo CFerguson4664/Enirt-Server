@@ -29,7 +29,7 @@ public class eatDots : MonoBehaviour
         if (other.gameObject.tag == "orb")
         {
             //If it is an orb, eat it and increase the player's size
-            Destroy(other.gameObject);
+            objectManager.removeOrbs.Add(other.gameObject.GetComponent<orbData>().Id);
             size += 1;
         }
     }
