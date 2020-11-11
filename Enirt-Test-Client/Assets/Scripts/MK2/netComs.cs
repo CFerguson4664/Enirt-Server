@@ -131,7 +131,7 @@ public class netComs
     static String[] receiveMessages(NetworkStream stream)
     {
         // Buffer to store the response bytes.
-        Byte[] data = new Byte[40000];
+        Byte[] data = new Byte[150000];
 
         // String to store the response ASCII representation.
         String[] responseData;

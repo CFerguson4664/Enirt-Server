@@ -104,7 +104,7 @@ public class orbSync
             foreach (long Id in currentIds)
             {
                 //Limit the number of orbs in game to 1000, because the message size otherwise might get huge; also make sure the message fits in our buffer
-                if(counter >= 1000 || message.Length > 39000)
+                if(counter >= 5000 || message.Length > 149950)
                 {
                     break;
                 }
@@ -121,7 +121,7 @@ public class orbSync
 
 
             //Send the message to the server
-            if(counter >= 1000 || message.Length > 39000)
+            if(counter >= 5000 || message.Length > 149950)
             {
                 netComs.NBSendMessage(50, message);
             }
@@ -188,8 +188,8 @@ public class orbSync
             {
                 string[] data = orb.Split(':');
 
-                float XPos = float.Parse(data[0]) * manager.Width - (0.5f * manager.Width);
-                float YPos = float.Parse(data[1]) * manager.Height- (0.5f * manager.Height);
+                float XPos = (float)Math.Round(float.Parse(data[0]) * manager.Width - (0.5f * manager.Width),2);
+                float YPos = (float)Math.Round(float.Parse(data[1]) * manager.Height- (0.5f * manager.Height),2);
                 long Id = long.Parse(data[2]);
 
 
