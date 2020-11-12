@@ -15,9 +15,10 @@ GameObject:
   - component: {fileID: 5793569463022736846}
   - component: {fileID: 5793569463022736844}
   - component: {fileID: 5793569463022736834}
+  - component: {fileID: 8607315599824390728}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -109,6 +110,8 @@ MonoBehaviour:
   glideSpeed: 15
   currentPosition: {x: 0, y: 0, z: 0}
   currentSize: 0
+  glide: 0
+  Id: 0
 --- !u!114 &5793569463022736847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,7 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b88ce18d58f69049b6adee553576664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 0
+  size: 20
 --- !u!58 &5793569463022736846
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -148,15 +151,15 @@ Rigidbody2D:
   m_GameObject: {fileID: 5793569463022736842}
   m_BodyType: 0
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
-  m_Mass: 0.0001
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
   m_Material: {fileID: 6200000, guid: e11d13c3179f1074c8a470253afb9617, type: 2}
   m_Interpolate: 0
-  m_SleepingMode: 1
+  m_SleepingMode: 0
   m_CollisionDetection: 0
   m_Constraints: 4
 --- !u!114 &5793569463022736834
@@ -171,3 +174,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c251973f790a96d4e9ca89f7654b7de7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8607315599824390728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5793569463022736842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cb653d8f704dc14889a4b340e2fe764, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  recombineTime: 0

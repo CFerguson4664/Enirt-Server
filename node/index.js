@@ -1,7 +1,7 @@
 const net = require('net');
 
-const orbsPerSecond = 5;
-const orbsFullSyncDelay = 20000;
+const orbsPerSecond = 20;
+const orbsFullSyncDelay = 20000; //ms
 
 //Stores all of the connected sockets and their ids
 var sockets = [];

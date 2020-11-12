@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -19,13 +20,14 @@ public class PlayerMovement : MonoBehaviour
     public float glideTime;
     public float glideSpeed;
 
-
     public Vector3 currentPosition;
     public int currentSize;
 
-    private bool glide = false;
+    public bool glide = false;
     private Vector3 glideDirection;
     private float glideTimer = 0;
+
+    public int Id;
 
     // Start is called before the first frame update
     void Start()
@@ -38,9 +40,13 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown("space"))
         {
-            PlayerData newPlayer = new PlayerData(currentSize / 2, currentPosition.x, currentPosition.y, currentPosition.z);
-            GetComponent<eatDots>().size /= 2;
-            playerManager.AddPlayer(newPlayer, true);
+            if(GetComponent<eatDots>().size >= eatDots.minSize * 2)
+            {
+                PlayerData newPlayer = new PlayerData(currentSize / 2, currentPosition.x, currentPosition.y, currentPosition.z);
+                GetComponent<eatDots>().size /= 2;
+                GetComponent<recombine>().SetRecombine();
+                playerManager.AddPlayer(newPlayer, GetComponent<eatDots>().size, true);
+            }
         }
 
         if (glide)
@@ -57,35 +63,16 @@ public class PlayerMovement : MonoBehaviour
     public void StartGlide()
     {
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 offset = mousePosition - currentPosition;
+        Vector3 offset = mousePosition - transform.position;
+        Debug.Log(mousePosition);
+        Debug.Log(transform.position);
+        Debug.Log(offset);
 
-        float XPos = 0;
-        float YPos = 0;
-
-        if (Math.Abs(offset.x) > Math.Abs(offset.y))
-        {
-            YPos = 1000f;
-            XPos = Math.Abs(offset.x) * (1000f / Math.Abs(offset.y));
-        }
-        else
-        {
-            XPos = 1000f;
-            YPos = Math.Abs(offset.y) * (1000f / Math.Abs(offset.x));
-        }
-        
-        if(offset.x < 0)
-        {
-            XPos *= -1;
-        }
-
-        if (offset.y < 0)
-        {
-            YPos *= -1;
-        }
-
-        glideDirection = new Vector3(XPos, YPos, currentPosition.z);
+        glideDirection = new Vector3((offset.x * 1000) + transform.position.x, (offset.y * 1000) + transform.position.y, transform.position.z);
         glideTimer = glideTime;
         glide = true;
+
+        Debug.Log(glideDirection);
     }
 
     void Glide()

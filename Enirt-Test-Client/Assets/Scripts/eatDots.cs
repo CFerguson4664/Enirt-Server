@@ -5,6 +5,7 @@ using UnityEngine;
 public class eatDots : MonoBehaviour
 {
     //Stores the number of orbs the player has eaten
+    public static int minSize = 20;
     public int size;
 
     // Start is called before the first frame update
@@ -12,7 +13,7 @@ public class eatDots : MonoBehaviour
     {
         //Calculate the player's radius and scale their model accordingly
         float radius = Mathf.Sqrt(size / 50f / Mathf.PI);
-        transform.localScale = new Vector3(radius + 0.5f, radius + 0.5f, transform.localScale.z);
+        transform.localScale = new Vector3(radius, radius, transform.localScale.z);
     }
 
     // Update is called once per frame
@@ -20,10 +21,11 @@ public class eatDots : MonoBehaviour
     {
         //Calculate the player's radius and scale their model accordingly
         float radius = Mathf.Sqrt(size / 50f / Mathf.PI);
-        transform.localScale = new Vector3(radius + 0.5f, radius + 0.5f, transform.localScale.z);
+        transform.localScale = new Vector3(radius, radius, transform.localScale.z);
+        playerManager.ourPlayers[GetComponent<PlayerMovement>().Id].Size = size;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnCollisionEnter2D(Collision2D other)
     {
         //Check to see if the tag on the collider is equal to an Orb
         if (other.gameObject.tag == "orb")

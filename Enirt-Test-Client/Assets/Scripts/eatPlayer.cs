@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class eatPlayer : MonoBehaviour
 {
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,7 +26,7 @@ public class eatPlayer : MonoBehaviour
             if(GetComponent<eatDots>().size > other.gameObject.GetComponent<eatDots>().size) 
             {
                 //And their size is greater than 0
-                if(other.gameObject.GetComponent<eatDots>().size > 0)
+                if(other.gameObject.GetComponent<eatDots>().size > eatDots.minSize)
                 {
                     //Increase our size 
                     GetComponent<eatDots>().size++;
@@ -37,7 +38,7 @@ public class eatPlayer : MonoBehaviour
             else
             {
                 //And our size is greater than 0
-                if (GetComponent<eatDots>().size > 0)
+                if (GetComponent<eatDots>().size > eatDots.minSize)
                 {
                     //Decrease our size
                     GetComponent<eatDots>().size--;

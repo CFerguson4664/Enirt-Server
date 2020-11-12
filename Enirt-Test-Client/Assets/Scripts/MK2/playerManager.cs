@@ -8,7 +8,7 @@ public class playerManager : MonoBehaviour
     public  static GameObject player;
     public  GameObject playerObj;
 
-    public static void AddPlayer(PlayerData playerData, bool glide)
+    public static void AddPlayer(PlayerData playerData, int size, bool glide)
     {
         int playerId = 0;
         for(int i = 0; i < int.MaxValue; i++)
@@ -21,7 +21,9 @@ public class playerManager : MonoBehaviour
         }
 
         playerData.gameObject = Instantiate(player, new Vector3(playerData.XPos, playerData.YPos, playerData.ZPos), Quaternion.identity);
-        playerData.gameObject.GetComponent<eatDots>().size = playerData.Size;
+        playerData.gameObject.GetComponent<eatDots>().size = size;
+        playerData.gameObject.GetComponent<PlayerMovement>().Id = playerId;
+        playerData.gameObject.GetComponent<recombine>().SetRecombine();
         playerData.Id = playerId;
 
         if(glide)
@@ -32,7 +34,7 @@ public class playerManager : MonoBehaviour
         ourPlayers.Add(playerId, playerData);
     }
 
-    static void RemovePlayer(int Id)
+    public static void RemovePlayer(int Id)
     {
         if (ourPlayers.ContainsKey(Id))
         {

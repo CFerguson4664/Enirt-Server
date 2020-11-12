@@ -135,10 +135,11 @@ GameObject:
   - component: {fileID: 43526245}
   - component: {fileID: 43526244}
   - component: {fileID: 43526246}
+  - component: {fileID: 43526247}
   - component: {fileID: 43526248}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -226,6 +227,12 @@ MonoBehaviour:
   rightBound: 48
   topBound: 48
   bottomBound: -48
+  glideTime: 0
+  glideSpeed: 0
+  currentPosition: {x: 0, y: 0, z: 0}
+  currentSize: 0
+  glide: 0
+  Id: 0
 --- !u!58 &43526244
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -236,7 +243,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -254,7 +261,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b88ce18d58f69049b6adee553576664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 0
+  size: 20
 --- !u!50 &43526246
 Rigidbody2D:
   serializedVersion: 4
@@ -265,9 +272,9 @@ Rigidbody2D:
   m_GameObject: {fileID: 43526240}
   m_BodyType: 0
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
-  m_Mass: 0.0001
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -276,6 +283,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &43526247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 43526240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cb653d8f704dc14889a4b340e2fe764, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  recombineTime: 0
 --- !u!114 &43526248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,6 +402,7 @@ GameObject:
   - component: {fileID: 538632375}
   - component: {fileID: 538632377}
   - component: {fileID: 538632378}
+  - component: {fileID: 538632374}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -389,6 +410,20 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &538632374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 538632373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88d654e592cd3c34aab2772cbd4f240c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerObj: {fileID: 5793569463022736842, guid: d76f96a2d39be1a4fa8d455a1a2fd7c1,
+    type: 3}
 --- !u!4 &538632375
 Transform:
   m_ObjectHideFlags: 0
