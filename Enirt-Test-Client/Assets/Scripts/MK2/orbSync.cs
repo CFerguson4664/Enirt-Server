@@ -15,16 +15,16 @@ public class orbSync
     static Thread SyncThread;
 
     //Store the incoming messages that we need to deal with
-    static List<String> incomingOrbMessages = new List<string>();
-    static List<String> beingReadOrb = new List<string>();
+    static List<string> incomingOrbMessages = new List<string>();
+    static List<string> beingReadOrb = new List<string>();
 
     //Store the incoming messages that we need to deal with
-    static List<String> incomingSyncMessages = new List<string>();
-    static List<String> beingReadSync = new List<string>();
+    static List<string> incomingSyncMessages = new List<string>();
+    static List<string> beingReadSync = new List<string>();
 
     //Store the incoming messages that we need to deal with
-    static List<String> incomingSyncRequestMessages = new List<string>();
-    static List<String> beingReadSyncRequest = new List<string>();
+    static List<string> incomingSyncRequestMessages = new List<string>();
+    static List<string> beingReadSyncRequest = new List<string>();
 
     // Start is called before the first frame update
     public static void Init()
@@ -161,8 +161,8 @@ public class orbSync
             var incomingIds = incomingData.Keys; //To array is not used here because the source will not be modified
 
             //Removes all items in the second array from the first array
-            var toAdd = incomingIds.Except(currentIds);
-            var toRemove = currentIds.Except(incomingIds);
+            var toAdd = incomingIds.Except(currentIds).ToArray();
+            var toRemove = currentIds.Except(incomingIds).ToArray();
 
             foreach (long Id in toAdd)
             {

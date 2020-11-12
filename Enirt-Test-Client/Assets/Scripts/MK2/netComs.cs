@@ -40,12 +40,15 @@ public class netComs
 
     public static void HaltImmediately()
     {
-        //Halt the networking thread and close the connection to the server
-        Debug.Log("Halt");
-        NetworkThread.Abort();
-        networkTimer.Close();
-        networkStream.Close();
-        client.Close();
+        if(enableNet)
+        {
+            //Halt the networking thread and close the connection to the server
+            Debug.Log("Halt");
+            NetworkThread.Abort();
+            networkTimer.Close();
+            networkStream.Close();
+            client.Close();
+        }
     }
 
     //This function contains the code to allow another thread to handle networking

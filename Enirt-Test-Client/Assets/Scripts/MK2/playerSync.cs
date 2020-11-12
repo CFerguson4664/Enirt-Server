@@ -6,6 +6,8 @@ using UnityEngine;
 using System.Timers;
 using System.Threading;
 using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 public class playerSync
 {
@@ -14,8 +16,8 @@ public class playerSync
     static Thread SyncThread;
 
     //Store the incoming messages that we need to deal with
-    static List<String> incomingMessages = new List<string>();
-    static List<String> beingRead = new List<string>();
+    static List<string> incomingMessages = new List<string>();
+    static List<string> beingRead = new List<string>();
 
     // Start is called before the first frame update
     public static void Init()
@@ -61,9 +63,9 @@ public class playerSync
 
     static void SendPosition()
     {
-        try
+        /*try
         {
-            Vector3 playerPos = PlayerMovement.currentPostiton;
+            Vector3 playerPos = PlayerMovement.currentPosition;
 
             //Get the position and size of the player object for this client
             float x = playerPos.x;
@@ -81,7 +83,7 @@ public class playerSync
         {
             Debug.Log(ex.Message);
             Debug.Log(ex.StackTrace);
-        }
+        }*/
     }
 
     static void ReadMessages()
@@ -90,30 +92,44 @@ public class playerSync
         incomingMessages = new List<string>();
         foreach (string message in beingRead)
         {
-            string[] vals = message.Split(':');
+            string[] getId = message.Split('!');
 
-            Debug.Log("Message: " + message);
-            Debug.Log("Vals 0: " + vals[0]);
+            int clientId = int.Parse(getId[0]);
 
-            int playerId = int.Parse(vals[0]);
-            long time = long.Parse(vals[1]);
-            float x = float.Parse(vals[2]);
-            float y = float.Parse(vals[3]);
-            float z = 0f;
-            int size = int.Parse(vals[4]);
+            string remainingMessage = getId[1];
 
+            string[] data = remainingMessage.Split('?');
 
-            if(objectManager.players.ContainsKey(playerId))
+            Dictionary<int, PlayerData> incomingPlayers = new Dictionary<int, PlayerData>();
+
+            foreach(string player in data)
             {
-                Debug.Log("Updating data");
-                PlayerData currentData = objectManager.players[playerId];
+                string[] vals = player.Split(':');
 
-                currentData.UpdateData(time, size, x, y, z);
+                int playerId = int.Parse(vals[0]);
+                long time = long.Parse(vals[1]);
+                float x = float.Parse(vals[2]);
+                float y = float.Parse(vals[3]);
+                float z = 0f;
+                int size = int.Parse(vals[4]);
+
+                incomingPlayers.Add(playerId, new PlayerData(playerId, clientId, time, size, x, y, z));
             }
-            else
+
+            var currentPlayersIds = objectManager.currentClients[clientId].Players.Keys.ToArray();
+            var incomingPlayersIds = incomingPlayers.Keys;
+
+            var addPlayers = incomingPlayersIds.Except(currentPlayersIds).ToArray();
+            var removePlayers = currentPlayersIds.Except(incomingPlayersIds).ToArray();
+
+            foreach(int Id in addPlayers)
             {
-                Debug.Log("Creating new data");
-                objectManager.players.Add(playerId, new PlayerData(playerId, time, size, x, y, z));
+                objectManager.addPlayers.Add(incomingPlayers[Id]);
+            }
+
+            foreach(int Id in removePlayers)
+            {
+                objectManager.removePlayers.Add(new IdPair(clientId, Id));
             }
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Dynamic;
 using System.Linq;
 using UnityEngine;
 
@@ -14,21 +15,29 @@ public class objectManager : MonoBehaviour
     public static GameObject orb;
     public GameObject orbObj;
 
-    //Store the current data for each player in a dictionary indexed with the player ids.
-    //The data in this is updated by playerSync.
-    public static Dictionary<int,PlayerData> players = new Dictionary<int,PlayerData>();
+    //Store the player data from each client in a dictionary indexed with the player ids.
+    public static Dictionary<int, ClientData> currentClients = new Dictionary<int, ClientData>();
+
+    //Stores the ids of the orbs to be removed the next cycle
+    public static List<PlayerData> addPlayers = new List<PlayerData>();
+    private static List<PlayerData> addPlayersActive = new List<PlayerData>();
+
+    //Stores the ids of the orbs to be added the next cycle
+    public static List<IdPair> removePlayers = new List<IdPair>();
+    private static List<IdPair> removePlayersActive = new List<IdPair>();
 
 
-    //Stores the orbs currently being displayed
+
+    //Stores the orbs currently being displayed in a dictionary indexed with the orb timestamps.
     public static Dictionary<long, OrbData> currentOrbs = new Dictionary<long, OrbData>();
 
     //Stores the ids of the orbs to be removed the next cycle
     public static List<OrbData> addOrbs = new List<OrbData>();
-    public static List<OrbData> addOrbsActive = new List<OrbData>();
+    private static List<OrbData> addOrbsActive = new List<OrbData>();
 
     //Stores the ids of the orbs to be added the next cycle
     public static List<long> removeOrbs = new List<long>();
-    public static List<long> removeOrbsActive = new List<long>();
+    private static List<long> removeOrbsActive = new List<long>();
 
     // Start is called before the first frame update
     void Start()
@@ -40,14 +49,57 @@ public class objectManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Update the graphics for every opponent
-        foreach (PlayerData player in players.Values)
-        {
-            InterpolatePlayer(player);
-        }
+        AddPlayers();
+        RemovePlayers();
+        ProcessPlayers();
 
         AddOrbs();
         RemoveOrbs();
+    }
+
+    static void AddPlayers()
+    {
+        addPlayersActive = addPlayers;
+        addPlayers = new List<PlayerData>();
+
+        foreach (PlayerData playerData in addPlayersActive)
+        {
+            //If not create one
+            playerData.gameObject = Instantiate(marker, new Vector3(playerData.XPos, playerData.YPos, playerData.ZPos), Quaternion.identity);
+            playerData.gameObject.GetComponent<eatDots>().size = playerData.Size;
+            currentClients[playerData.ClientId].Players.Add(playerData.Id, playerData);
+        }
+    }
+
+    static void RemovePlayers()
+    {
+        removePlayersActive = removePlayers;
+        removePlayers = new List<IdPair>();
+
+        foreach (IdPair Ids in removePlayersActive)
+        {
+            ClientData client = currentClients[Ids.ClientId];
+
+            if (client.Players.ContainsKey(Ids.PlayerId))
+            {
+                if (client.Players[Ids.PlayerId].gameObject != null)
+                {
+                    Destroy(client.Players[Ids.PlayerId].gameObject);
+                }
+                client.Players.Remove(Ids.PlayerId);
+            }
+        }
+    }
+
+    static void ProcessPlayers()
+    {
+        foreach (ClientData client in currentClients.Values)
+        {
+            foreach (PlayerData player in client.Players.Values)
+            {
+                InterpolatePlayer(player);
+            }
+        }
     }
 
     static void AddOrbs()
@@ -95,7 +147,6 @@ public class objectManager : MonoBehaviour
         }
     }
 
-
     static void InterpolatePlayer(PlayerData player)
     {
         long time = netComs.GetTime();
@@ -127,7 +178,6 @@ public class objectManager : MonoBehaviour
             player.gameObject = Instantiate(marker, new Vector3(xPos, yPos, zPos), Quaternion.identity);
             player.gameObject.GetComponent<eatDots>().size = player.Size;
         }
-        
     }
 }
 
@@ -135,6 +185,7 @@ public class PlayerData
 {
     //Store the playerId of the player
     public int Id { get; set; }
+    public int ClientId { get; set; }
 
     //Store the time that this data was updated
     public long Time { get; set; }
@@ -163,9 +214,19 @@ public class PlayerData
         gameObject = null;
     }
 
-    public PlayerData(int idIn, long timeIn, int sizeIn, float xPosIn, float yPosIn, float zPosIn)
+    public PlayerData(int sizeIn, float xPosIn, float yPosIn, float zPosIn)
+    {
+        Size = sizeIn;
+        XPos = xPosIn;
+        YPos = yPosIn;
+        ZPos = zPosIn;
+        gameObject = null;
+    }
+
+    public PlayerData(int idIn, int clientIdIn, long timeIn, int sizeIn, float xPosIn, float yPosIn, float zPosIn)
     {
         Id = idIn;
+        ClientId = clientIdIn;
         Time = timeIn;
         Size = sizeIn;
         XPos = xPosIn;
@@ -209,3 +270,38 @@ public class OrbData
         ZPos = 0;
     }
 }
+
+public class ClientData
+{
+    public int Id { get; set; }
+
+    public Dictionary<int, PlayerData> Players = new Dictionary<int, PlayerData>();
+
+    public ClientData()
+    {
+
+    }
+
+    public ClientData(int IdIn)
+    {
+        Id = IdIn;
+    }
+}
+
+public class IdPair
+{
+    public int ClientId { get; set; }
+    public int PlayerId { get; set; }
+
+    public IdPair()
+    {
+
+    }
+
+    public IdPair(int clientIdIn, int playerIdIn)
+    {
+        ClientId = clientIdIn;
+        PlayerId = playerIdIn;
+    }
+}
+

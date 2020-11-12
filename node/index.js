@@ -267,8 +267,8 @@ setInterval(function() {
 
     //Send two random numbers for each orb
     for (var i = 1; i < orbsPerSecond; i++) {
-        randMessage += "?" + Math.random().toFixed(2);
-        randMessage += ":" + Math.random().toFixed(2);
+        randMessage += "?" + Math.random().toFixed(4);
+        randMessage += ":" + Math.random().toFixed(4);
         randMessage += ":" + (time + (1000 / orbsPerSecond) * i).toFixed(0);
     }
 

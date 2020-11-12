@@ -68,6 +68,7 @@
     <Compile Include="Assets\Scripts\MK2\objectManager.cs" />
     <Compile Include="Assets\Scripts\MK2\orbData.cs" />
     <Compile Include="Assets\Scripts\MK2\orbSync.cs" />
+    <Compile Include="Assets\Scripts\MK2\playerManager.cs" />
     <Compile Include="Assets\Scripts\MK2\playerSync.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\dotCreator.cs" />

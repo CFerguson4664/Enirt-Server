@@ -27,6 +27,11 @@ public class manager : MonoBehaviour
         net.Init(enableNetworking, IPAddress);
     }
 
+    private void Update()
+    {
+        
+    }
+
     //Called when the application closes, built in unity event handler
     void OnApplicationQuit()
     {
