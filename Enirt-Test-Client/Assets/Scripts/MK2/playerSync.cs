@@ -63,35 +63,45 @@ public class playerSync
 
     static void SendPosition()
     {
-        /*try
+        var keys = playerManager.ourPlayers.Keys.ToArray();
+
+        string message = "0|" + netComs.socketId + "!";
+        long currentTime = netComs.GetTime();
+
+        foreach (int key in keys)
         {
-            Vector3 playerPos = PlayerMovement.currentPosition;
+            if(playerManager.ourPlayers.ContainsKey(key))
+            {
+                Player player = playerManager.ourPlayers[key];
 
-            //Get the position and size of the player object for this client
-            float x = playerPos.x;
-            float y = playerPos.y;
-            int size = PlayerMovement.currentSize;
-            long currentTime = netComs.GetTime();
+                message += player.Id + ":";
+                message += currentTime + ":";
+                message += player.XPos + ":";
+                message += player.YPos + ":";
+                message += player.Size + "?";
 
-            //Create the message string
-            string message = "0|" + netComs.socketId + ":" + currentTime + ":" + x + ":" + y + ":" + size;
+            }
+        }
 
-            //Send the message to the server
-            netComs.NBSendMessage(2, message);
-        } 
-        catch (Exception ex)
-        {
-            Debug.Log(ex.Message);
-            Debug.Log(ex.StackTrace);
-        }*/
+        
+
+        message = message.Trim('?');
+
+        //Debug.Log("sending " + message);
+
+        //Send the message to the server
+        netComs.NBSendMessage(2, message);
     }
 
     static void ReadMessages()
     {
         beingRead = incomingMessages;
         incomingMessages = new List<string>();
+
         foreach (string message in beingRead)
         {
+            //Debug.Log("reading " + message);
+
             string[] getId = message.Split('!');
 
             int clientId = int.Parse(getId[0]);
@@ -102,7 +112,7 @@ public class playerSync
 
             Dictionary<int, PlayerData> incomingPlayers = new Dictionary<int, PlayerData>();
 
-            foreach(string player in data)
+            foreach (string player in data)
             {
                 string[] vals = player.Split(':');
 
@@ -116,20 +126,46 @@ public class playerSync
                 incomingPlayers.Add(playerId, new PlayerData(playerId, clientId, time, size, x, y, z));
             }
 
-            var currentPlayersIds = objectManager.currentClients[clientId].Players.Keys.ToArray();
-            var incomingPlayersIds = incomingPlayers.Keys;
+            int[] addPlayers;
+            int[] removePlayers;
 
-            var addPlayers = incomingPlayersIds.Except(currentPlayersIds).ToArray();
-            var removePlayers = currentPlayersIds.Except(incomingPlayersIds).ToArray();
 
-            foreach(int Id in addPlayers)
+            if (objectManager.currentClients.ContainsKey(clientId))
+            {
+                var currentPlayersIds = objectManager.currentClients[clientId].Players.Keys.ToArray();
+                var incomingPlayersIds = incomingPlayers.Keys;
+
+                addPlayers = incomingPlayersIds.Except(currentPlayersIds).ToArray();
+                removePlayers = currentPlayersIds.Except(incomingPlayersIds).ToArray();
+            }
+            else
+            {
+                addPlayers = incomingPlayers.Keys.ToArray(); ;
+                removePlayers = new int[0];
+            }
+
+            foreach (int Id in addPlayers)
             {
                 objectManager.addPlayers.Add(incomingPlayers[Id]);
             }
 
-            foreach(int Id in removePlayers)
+            foreach (int Id in removePlayers)
             {
+                Debug.Log("removing player");
                 objectManager.removePlayers.Add(new IdPair(clientId, Id));
+            }
+
+            foreach(int Id in incomingPlayers.Keys)
+            {
+                if (objectManager.currentClients.ContainsKey(incomingPlayers[Id].ClientId))
+                {
+                    ClientData client = objectManager.currentClients[incomingPlayers[Id].ClientId];
+
+                    if(client.Players.ContainsKey(incomingPlayers[Id].Id))
+                    {
+                        client.Players[incomingPlayers[Id].Id].UpdateData(incomingPlayers[Id].Time, incomingPlayers[Id].Size, incomingPlayers[Id].XPos, incomingPlayers[Id].YPos, incomingPlayers[Id].ZPos);
+                    }
+                }
             }
         }
     }

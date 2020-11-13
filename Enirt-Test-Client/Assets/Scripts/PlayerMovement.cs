@@ -11,7 +11,6 @@ public class PlayerMovement : MonoBehaviour
 {
     public float speed;
     public float slack;
-    public float cameraSlack;
     public float leftBound;
     public float rightBound;
     public float topBound;
@@ -26,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     public bool glide = false;
     private Vector3 glideDirection;
     private float glideTimer = 0;
+    float effectiveSpeed;
 
     public int Id;
 
@@ -38,13 +38,16 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        effectiveSpeed = (float)(speed * (1 / Math.Log(Math.Pow(GetComponent<eatDots>().size, 0.5))));
+
         if (Input.GetKeyDown("space"))
         {
             if(GetComponent<eatDots>().size >= eatDots.minSize * 2)
             {
-                PlayerData newPlayer = new PlayerData(currentSize / 2, currentPosition.x, currentPosition.y, currentPosition.z);
                 GetComponent<eatDots>().size /= 2;
-                GetComponent<recombine>().SetRecombine();
+                playerManager.ourPlayers[Id].Size = GetComponent<eatDots>().size;
+                PlayerData newPlayer = new PlayerData(currentSize / 2, currentPosition.x, currentPosition.y, currentPosition.z);
+                playerManager.ourPlayers[Id].SetRecombine();
                 playerManager.AddPlayer(newPlayer, GetComponent<eatDots>().size, true);
             }
         }
@@ -72,6 +75,9 @@ public class PlayerMovement : MonoBehaviour
         glideTimer = glideTime;
         glide = true;
 
+        
+        gameObject.layer = 9;
+
         Debug.Log(glideDirection);
     }
 
@@ -79,16 +85,18 @@ public class PlayerMovement : MonoBehaviour
     {
         if(glideTimer > 0)
         {
-            float adjustedSpeed = glideSpeed * Time.deltaTime;
+            float adjustedSpeed = glideSpeed * Time.deltaTime * (glideTimer / glideTime);
 
             //Translate the player object by adjusted speed in the needed direction
             transform.position = Vector2.MoveTowards(transform.position, glideDirection, adjustedSpeed);
+            playerManager.ourPlayers[Id].UpdateData(netComs.GetTime(), GetComponent<eatDots>().size, transform.position.x, transform.position.y, transform.position.z);
 
             currentPosition = transform.position;
             glideTimer -= Time.deltaTime;
         }
         else
         {
+            gameObject.layer = 8;
             glide = false;
         }
     }
@@ -102,19 +110,14 @@ public class PlayerMovement : MonoBehaviour
         if (Vector3.Distance(mousePosition, transform.position) > slack)
         {
             //Multiplying by time.deltaTime compensates for varying frame rates
-            float adjustedSpeed = speed * Time.deltaTime;
+            float adjustedSpeed = effectiveSpeed * Time.deltaTime;
 
             //Translate the player object by adjusted speed in the needed direction
             transform.position = Vector2.MoveTowards(transform.position, mousePosition, adjustedSpeed);
-
-            float cameraSpeed = Vector2.Distance(Camera.main.transform.position, transform.position) * adjustedSpeed * (1 / cameraSlack);
-
-            Vector3 cameraGoalPos = new Vector3(transform.position.x, transform.position.y, Camera.main.transform.position.z);
-
-            Camera.main.transform.position = Vector3.MoveTowards(Camera.main.transform.position, cameraGoalPos, cameraSpeed);
         }
 
         currentPosition = transform.position;
+        playerManager.ourPlayers[Id].UpdateData(netComs.GetTime(), GetComponent<eatDots>().size, transform.position.x, transform.position.y, transform.position.z);
         currentSize = GetComponent<eatDots>().size;
     }
 

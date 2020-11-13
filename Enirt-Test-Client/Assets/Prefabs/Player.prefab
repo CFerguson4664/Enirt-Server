@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5793569463022736844}
   - component: {fileID: 5793569463022736834}
   - component: {fileID: 8607315599824390728}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -99,15 +99,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bb35238a0b4ff4448af7ce1b95342af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
+  speed: 10
   slack: 0.1
   cameraSlack: 2
   leftBound: -48
   rightBound: 48
   topBound: 48
   bottomBound: -48
-  glideTime: 0.25
-  glideSpeed: 15
+  glideTime: 0.5
+  glideSpeed: 25
   currentPosition: {x: 0, y: 0, z: 0}
   currentSize: 0
   glide: 0
@@ -186,4 +186,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cb653d8f704dc14889a4b340e2fe764, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  recombineTime: 0

@@ -15,10 +15,10 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
+  - PlayerNormal
+  - PlayerGlide
+  - Orb
+  - OtherPlayer
   - 
   - 
   - 
@@ -42,4 +42,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: glide
+    uniqueID: 1689186199
+    locked: 0
+  - name: opponent
+    uniqueID: 1029735051
     locked: 0

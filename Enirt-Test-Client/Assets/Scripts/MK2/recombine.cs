@@ -6,47 +6,28 @@ using UnityEngine.Rendering;
 
 public class recombine : MonoBehaviour
 {
-    public float recombineTime;
+    //Store all of the collisions occuring each frame
+    List<int> collisions = new List<int>();
 
-    // Start is called before the first frame update
-    void Awake()
-    {
-        recombineTime = 1;
-    }
 
     // Update is called once per frame
-    void Update()
-    { 
-        if(recombineTime > 0)
-        {
-            recombineTime -= Time.deltaTime;
-        }
-    }
-
-    public void SetRecombine()
+    void FixedUpdate()
     {
-        recombineTime = (float)(Math.Pow(Math.Log(GetComponent<eatDots>().size), 1.7) * 3);
+        //If we still exist in the player list
+        if(playerManager.ourPlayers.ContainsKey(GetComponent<PlayerMovement>().Id)) 
+        {
+            //update all of collisions
+            playerManager.ourPlayers[GetComponent<PlayerMovement>().Id].currentPlayerCollisions = collisions;
+            collisions = new List<int>();
+        }
     }
 
     private void OnCollisionStay2D(Collision2D other)
     {
         if (other.gameObject.tag == "Player")
         {
-            if(recombineTime <= 0 && other.otherCollider.gameObject.GetComponent<recombine>().recombineTime <= 0)
-            {
-                if(!GetComponent<PlayerMovement>().glide && !other.otherCollider.gameObject.GetComponent<PlayerMovement>().glide)
-                {
-                    if (GetComponent<eatDots>().size > other.otherCollider.gameObject.GetComponent<eatDots>().size)
-                    {
-                        Debug.Log(other.otherCollider.gameObject.GetComponent<PlayerMovement>().Id);
-
-                        Debug.Log("recombine");
-                        GetComponent<eatDots>().size += playerManager.ourPlayers[other.otherCollider.gameObject.GetComponent<PlayerMovement>().Id].Size;
-                        playerManager.RemovePlayer(other.otherCollider.gameObject.GetComponent<PlayerMovement>().Id);
-                        other.otherCollider.gameObject.GetComponent<eatDots>().size = 0;
-                    }
-                }
-            }
+            //Add every player we are colliding with this frame to the list
+            collisions.Add(other.gameObject.GetComponent<PlayerMovement>().Id);
         }
     }
 }

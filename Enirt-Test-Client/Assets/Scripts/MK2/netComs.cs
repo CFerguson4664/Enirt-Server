@@ -15,17 +15,19 @@ public class netComs
     static TcpClient client;
     public static int socketId;
     static long clockOffset = 0;
+    public static string IPAddress;
 
     static System.Timers.Timer networkTimer;
     static Thread NetworkThread;
 
 
-    public void Init(bool enableNetworking, string serverIpAddress)
+    public void Init(bool enableNetworking)
     {
         if (enableNetworking)
         {
+            Debug.Log(IPAddress);
             //Connect to the server
-            networkStream = ConnectTCPClient(serverIpAddress, 8124);
+            networkStream = ConnectTCPClient(IPAddress, 8124);
             socketId = int.Parse(receiveMessages(networkStream)[0]);
             clockOffset = clockSync(networkStream);
             //Tell the server we are ready to begin receiving player data

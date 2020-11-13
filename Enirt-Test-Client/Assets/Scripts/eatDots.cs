@@ -23,6 +23,7 @@ public class eatDots : MonoBehaviour
         float radius = Mathf.Sqrt(size / 50f / Mathf.PI);
         transform.localScale = new Vector3(radius, radius, transform.localScale.z);
         playerManager.ourPlayers[GetComponent<PlayerMovement>().Id].Size = size;
+        GetComponent<Rigidbody2D>().mass = size;
     }
 
     private void OnCollisionEnter2D(Collision2D other)

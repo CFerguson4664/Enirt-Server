@@ -22,28 +22,30 @@ public class eatPlayer : MonoBehaviour
         //Check to see if the tag on the collider is equal to Enemy
         if (other.gameObject.tag == "marker")
         {
+
             //If our size is larger than the opponents size
-            if(GetComponent<eatDots>().size > other.gameObject.GetComponent<eatDots>().size) 
+            if(GetComponent<eatDots>().size > other.gameObject.GetComponent<markerEatDots>().size + 10) 
             {
-                //And their size is greater than 0
-                if(other.gameObject.GetComponent<eatDots>().size > eatDots.minSize)
+                float distance = Vector2.Distance(transform.position, other.gameObject.transform.position);
+                float radius = Mathf.Sqrt(GetComponent<eatDots>().size / 50f / Mathf.PI);
+
+                if (distance < radius)
                 {
                     //Increase our size 
-                    GetComponent<eatDots>().size++;
-                    //And decrease their size
-                    other.gameObject.GetComponent<eatDots>().size--;
+                    GetComponent<eatDots>().size += other.gameObject.GetComponent<markerEatDots>().size;
+                    objectManager.removePlayers.Add(new IdPair(other.gameObject.GetComponent<markerEatDots>().clientId, other.gameObject.GetComponent<markerEatDots>().playerId));
                 }
             }
             //If the opponents size is larger than our size
-            else
+            else if (other.gameObject.GetComponent<markerEatDots>().size > GetComponent<eatDots>().size + 10)
             {
-                //And our size is greater than 0
-                if (GetComponent<eatDots>().size > eatDots.minSize)
+                float distance = Vector2.Distance(transform.position, other.gameObject.transform.position);
+                float radius = Mathf.Sqrt(other.gameObject.GetComponent<markerEatDots>().size / 50f / Mathf.PI);
+
+                if(distance < radius)
                 {
-                    //Decrease our size
-                    GetComponent<eatDots>().size--;
-                    //And increase their size
-                    other.gameObject.GetComponent<eatDots>().size++;
+                    other.gameObject.GetComponent<markerEatDots>().size += GetComponent<eatDots>().size;
+                    playerManager.RemovePlayer(GetComponent<PlayerMovement>().Id);
                 }
             }
         }

@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class manager : MonoBehaviour
 {
     netComs net = new netComs();
     public bool enableNetworking;
-    public string IPAddress;
 
     public static int Width;
     public static int Height;
@@ -14,6 +14,10 @@ public class manager : MonoBehaviour
     public int boardWidth;
     public int boardHeight;
 
+    private void Awake()
+    {
+        
+    }
 
     //This script is used to allow uniy to start and stop the asynchronous networking functionalities
 
@@ -24,12 +28,30 @@ public class manager : MonoBehaviour
         Height = boardHeight;
         playerSync.Init();
         orbSync.Init();
-        net.Init(enableNetworking, IPAddress);
+        net.Init(enableNetworking);
+
+        PlayerData inital = new PlayerData(20, 0, 0, 0);
+        playerManager.AddPlayer(inital, 20, false);
     }
 
-    private void Update()
+    void Update()
     {
-        
+        if(playerManager.ourPlayers.Count == 0)
+        {
+            playerManager.ResetFile();
+            Camera.main.transform.position = new Vector3(0, 0, Camera.main.transform.position.z);
+            PlayerData inital = new PlayerData(20, 0, 0, 0);
+            playerManager.AddPlayer(inital, 20, false);
+        }
+
+
+        if (Input.GetKeyDown("escape"))
+        {
+            playerSync.HaltImmediately();
+            netComs.HaltImmediately();
+            orbSync.HaltImmediately();
+            SceneManager.LoadScene("splash");
+        }
     }
 
     //Called when the application closes, built in unity event handler

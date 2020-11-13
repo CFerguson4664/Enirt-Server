@@ -39,9 +39,37 @@ public class objectManager : MonoBehaviour
     public static List<long> removeOrbs = new List<long>();
     private static List<long> removeOrbsActive = new List<long>();
 
+    public static void ResetFile()
+    {
+        //Store the player data from each client in a dictionary indexed with the player ids.
+        currentClients = new Dictionary<int, ClientData>();
+
+        //Stores the ids of the orbs to be removed the next cycle
+        addPlayers = new List<PlayerData>();
+        addPlayersActive = new List<PlayerData>();
+
+        //Stores the ids of the orbs to be added the next cycle
+        removePlayers = new List<IdPair>();
+        removePlayersActive = new List<IdPair>();
+
+
+
+        //Stores the orbs currently being displayed in a dictionary indexed with the orb timestamps.
+        currentOrbs = new Dictionary<long, OrbData>();
+
+        //Stores the ids of the orbs to be removed the next cycle
+        addOrbs = new List<OrbData>();
+        addOrbsActive = new List<OrbData>();
+
+        //Stores the ids of the orbs to be added the next cycle
+        removeOrbs = new List<long>();
+        removeOrbsActive = new List<long>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        ResetFile();
         orb = orbObj;
         marker = markerObj;
     }
@@ -64,10 +92,20 @@ public class objectManager : MonoBehaviour
 
         foreach (PlayerData playerData in addPlayersActive)
         {
-            //If not create one
-            playerData.gameObject = Instantiate(marker, new Vector3(playerData.XPos, playerData.YPos, playerData.ZPos), Quaternion.identity);
-            playerData.gameObject.GetComponent<eatDots>().size = playerData.Size;
-            currentClients[playerData.ClientId].Players.Add(playerData.Id, playerData);
+            if (!currentClients.ContainsKey(playerData.ClientId))
+            {
+                currentClients.Add(playerData.ClientId, new ClientData(playerData.ClientId));
+            }
+
+            if(!currentClients[playerData.ClientId].Players.ContainsKey(playerData.Id))
+            {
+                //If not create one
+                playerData.gameObject = Instantiate(marker, new Vector3(playerData.XPos, playerData.YPos, playerData.ZPos), Quaternion.identity);
+                playerData.gameObject.GetComponent<markerEatDots>().size = playerData.Size;
+                playerData.gameObject.GetComponent<markerEatDots>().clientId = playerData.ClientId;
+                playerData.gameObject.GetComponent<markerEatDots>().playerId = playerData.Id;
+                currentClients[playerData.ClientId].Players.Add(playerData.Id, playerData);
+            }
         }
     }
 
@@ -108,8 +146,17 @@ public class objectManager : MonoBehaviour
         addOrbs = new List<OrbData>();
 
         long time = netComs.GetTime();
+
+        int counter = 0;
+
         foreach (OrbData orbData in addOrbsActive)
         {
+            if(counter > 5)
+            {
+                addOrbs.Concat(addOrbsActive);
+                break;
+            }
+
             if(orbData.Id < time)
             {
                 if (!currentOrbs.ContainsKey(orbData.Id))
@@ -127,6 +174,8 @@ public class objectManager : MonoBehaviour
             {
                 addOrbs.Add(orbData);
             }
+
+            counter++;
         }
     }
 
@@ -135,8 +184,16 @@ public class objectManager : MonoBehaviour
         removeOrbsActive = removeOrbs;
         removeOrbs = new List<long>();
 
+        int counter = 0;
+
         foreach (long Id in removeOrbsActive)
         {
+            if (counter > 5)
+            {
+                removeOrbs.Concat(removeOrbsActive);
+                break;
+            }
+
             if (currentOrbs.ContainsKey(Id))
             {
                 if(currentOrbs[Id].gameObject != null) {
@@ -144,6 +201,8 @@ public class objectManager : MonoBehaviour
                 }
                 currentOrbs.Remove(Id);
             }
+
+            counter++;
         }
     }
 
@@ -170,13 +229,13 @@ public class objectManager : MonoBehaviour
         {
             //If they do update its position
             player.gameObject.transform.position = new Vector3(xPos, yPos, zPos);
-            player.gameObject.GetComponent<eatDots>().size = player.Size;
+            player.gameObject.GetComponent<markerEatDots>().size = player.Size;
         }
         else
         {
             //If not create one
             player.gameObject = Instantiate(marker, new Vector3(xPos, yPos, zPos), Quaternion.identity);
-            player.gameObject.GetComponent<eatDots>().size = player.Size;
+            player.gameObject.GetComponent<markerEatDots>().size = player.Size;
         }
     }
 }

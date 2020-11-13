@@ -26,9 +26,25 @@ public class orbSync
     static List<string> incomingSyncRequestMessages = new List<string>();
     static List<string> beingReadSyncRequest = new List<string>();
 
+    public static void ResetFile()
+    {
+        //Store the incoming messages that we need to deal with
+        incomingOrbMessages = new List<string>();
+        beingReadOrb = new List<string>();
+
+        //Store the incoming messages that we need to deal with
+        incomingSyncMessages = new List<string>();
+        beingReadSync = new List<string>();
+
+        //Store the incoming messages that we need to deal with
+        incomingSyncRequestMessages = new List<string>();
+        beingReadSyncRequest = new List<string>();
+    }
+
     // Start is called before the first frame update
     public static void Init()
     {
+        ResetFile();
         SyncThread = new Thread(ThreadedSync);
         SyncThread.Start();
         incomingOrbMessages = new List<string>();
@@ -142,7 +158,6 @@ public class orbSync
 
         foreach (string message in beingReadSync)
         {
-            Debug.Log("Processing Sync Data");
             string[] orbs = message.Split('?');
 
             foreach (string orb in orbs)
