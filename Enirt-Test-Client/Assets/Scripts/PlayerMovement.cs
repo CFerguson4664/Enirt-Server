@@ -23,10 +23,15 @@ public class PlayerMovement : MonoBehaviour
     public int currentSize;
 
     public bool glide = false;
+	public static bool keyboardEnable;
+	
     private Vector3 glideDirection;
     private float glideTimer = 0;
     float effectiveSpeed;
-
+	
+	//Multiplying by time.deltaTime compensates for varying frame rates
+	float adjustedSpeed;
+	
     public int Id;
 
     // Start is called before the first frame update
@@ -58,7 +63,34 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            FollowMouse();
+			adjustedSpeed = effectiveSpeed * Time.deltaTime;
+			
+			// Keyboard controls
+			if(keyboardEnable==true){
+				Vector2 target = transform.position;
+				
+				if(Input.GetKey(KeyCode.D)){
+					target.x += adjustedSpeed;
+				}
+				if(Input.GetKey(KeyCode.A)){
+					target.x -= adjustedSpeed;
+				}
+				if(Input.GetKey(KeyCode.W)){
+					target.y += adjustedSpeed;
+				}
+				if(Input.GetKey(KeyCode.S)){
+					target.y -= adjustedSpeed;
+				}
+				
+				transform.position = target;
+				playerManager.ourPlayers[Id].UpdateData(netComs.GetTime(), GetComponent<eatDots>().size, transform.position.x, transform.position.y, transform.position.z);
+				currentSize = GetComponent<eatDots>().size;
+				
+			}
+			
+			else{
+				FollowMouse();
+			}
         }
         checkBounds();
     }
@@ -109,9 +141,6 @@ public class PlayerMovement : MonoBehaviour
         //Only move if the difference is significant (Eliminates bouncing when the player reaches the mouse)
         if (Vector3.Distance(mousePosition, transform.position) > slack)
         {
-            //Multiplying by time.deltaTime compensates for varying frame rates
-            float adjustedSpeed = effectiveSpeed * Time.deltaTime;
-
             //Translate the player object by adjusted speed in the needed direction
             transform.position = Vector2.MoveTowards(transform.position, mousePosition, adjustedSpeed);
         }

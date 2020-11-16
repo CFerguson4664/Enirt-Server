@@ -22,6 +22,7 @@ public class loadGame : MonoBehaviour
 
     public void StartGame()
     {
+        PlayerMovement.keyboardEnable = GameObject.Find("KeyboardToggle").GetComponent<Toggle>().isOn;
         netComs.IPAddress = IP;
         SceneManager.LoadScene("game");
     }

@@ -10,6 +10,7 @@ public class manager : MonoBehaviour
 
     public static int Width;
     public static int Height;
+    public static bool keyboardEnable;
 
     public int boardWidth;
     public int boardHeight;
@@ -61,5 +62,4 @@ public class manager : MonoBehaviour
         netComs.HaltImmediately();
         orbSync.HaltImmediately();
     }
-
 }
