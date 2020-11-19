@@ -6,7 +6,7 @@ using System.Dynamic;
 using System.Linq;
 using UnityEngine;
 
-public class objectManager : MonoBehaviour
+public class ObjectManager : MonoBehaviour
 {
     //The template object used to represent other players
     public static GameObject marker;
@@ -87,23 +87,27 @@ public class objectManager : MonoBehaviour
 
     static void AddPlayers()
     {
+        //Adds marker object to the game instance
         addPlayersActive = addPlayers;
         addPlayers = new List<PlayerData>();
 
         foreach (PlayerData playerData in addPlayersActive)
         {
+            //If we dont have any data for the client
             if (!currentClients.ContainsKey(playerData.ClientId))
             {
+                //Add it to our list
                 currentClients.Add(playerData.ClientId, new ClientData(playerData.ClientId));
             }
 
+            //If the marker doesnt exist, add it
             if(!currentClients[playerData.ClientId].Players.ContainsKey(playerData.Id))
             {
-                //If not create one
+                //set the marker's parameters
                 playerData.gameObject = Instantiate(marker, new Vector3(playerData.XPos, playerData.YPos, playerData.ZPos), Quaternion.identity);
-                playerData.gameObject.GetComponent<markerEatDots>().size = playerData.Size;
-                playerData.gameObject.GetComponent<markerEatDots>().clientId = playerData.ClientId;
-                playerData.gameObject.GetComponent<markerEatDots>().playerId = playerData.Id;
+                playerData.gameObject.GetComponent<MarkerEatDots>().size = playerData.Size;
+                playerData.gameObject.GetComponent<MarkerEatDots>().clientId = playerData.ClientId;
+                playerData.gameObject.GetComponent<MarkerEatDots>().playerId = playerData.Id;
                 currentClients[playerData.ClientId].Players.Add(playerData.Id, playerData);
             }
         }
@@ -111,6 +115,7 @@ public class objectManager : MonoBehaviour
 
     static void RemovePlayers()
     {
+        //Remove player from our list and delete their game object
         removePlayersActive = removePlayers;
         removePlayers = new List<IdPair>();
 
@@ -122,8 +127,11 @@ public class objectManager : MonoBehaviour
             {
                 if (client.Players[Ids.PlayerId].gameObject != null)
                 {
+                    //Destroy the game object
                     Destroy(client.Players[Ids.PlayerId].gameObject);
                 }
+
+                //Remove the maker from our list
                 client.Players.Remove(Ids.PlayerId);
             }
         }
@@ -131,6 +139,7 @@ public class objectManager : MonoBehaviour
 
     static void ProcessPlayers()
     {
+        //Move the marker objects
         foreach (ClientData client in currentClients.Values)
         {
             foreach (PlayerData player in client.Players.Values)
@@ -142,15 +151,17 @@ public class objectManager : MonoBehaviour
 
     static void AddOrbs()
     {
+        //Add orb objects to the game instances
         addOrbsActive = addOrbs;
         addOrbs = new List<OrbData>();
 
-        long time = netComs.GetTime();
+        long time = NetComs.GetTime();
 
         int counter = 0;
 
         foreach (OrbData orbData in addOrbsActive)
         {
+            //Only process so many orbs per frame to prevent lag
             if(counter > 5)
             {
                 addOrbs.Concat(addOrbsActive);
@@ -159,10 +170,12 @@ public class objectManager : MonoBehaviour
 
             if(orbData.Id < time)
             {
+                //If we dont already have the orb, then add it
                 if (!currentOrbs.ContainsKey(orbData.Id))
                 {
+                    //set the orb's parameters
                     orbData.gameObject = Instantiate(orb, new Vector3(orbData.XPos, orbData.YPos, orbData.ZPos), Quaternion.identity);
-                    orbData.gameObject.GetComponent<orbData>().Id = orbData.Id;
+                    orbData.gameObject.GetComponent<OrbId>().Id = orbData.Id;
                     currentOrbs.Add(orbData.Id, orbData);
                 }
                 else
@@ -188,17 +201,22 @@ public class objectManager : MonoBehaviour
 
         foreach (long Id in removeOrbsActive)
         {
+            //Only process so many orbs per frame to prevent lag
             if (counter > 5)
             {
                 removeOrbs.Concat(removeOrbsActive);
                 break;
             }
 
+            //Remove the orbs
             if (currentOrbs.ContainsKey(Id))
             {
                 if(currentOrbs[Id].gameObject != null) {
+                    //Delete their game objects
                     Destroy(currentOrbs[Id].gameObject);
                 }
+
+                //Remove them from our list
                 currentOrbs.Remove(Id);
             }
 
@@ -208,7 +226,7 @@ public class objectManager : MonoBehaviour
 
     static void InterpolatePlayer(PlayerData player)
     {
-        long time = netComs.GetTime();
+        long time = NetComs.GetTime();
         //Time since the position of the player was last received
         long timeSinceData = time - player.Time;
 
@@ -229,13 +247,13 @@ public class objectManager : MonoBehaviour
         {
             //If they do update its position
             player.gameObject.transform.position = new Vector3(xPos, yPos, zPos);
-            player.gameObject.GetComponent<markerEatDots>().size = player.Size;
+            player.gameObject.GetComponent<MarkerEatDots>().size = player.Size;
         }
         else
         {
             //If not create one
             player.gameObject = Instantiate(marker, new Vector3(xPos, yPos, zPos), Quaternion.identity);
-            player.gameObject.GetComponent<markerEatDots>().size = player.Size;
+            player.gameObject.GetComponent<MarkerEatDots>().size = player.Size;
         }
     }
 }

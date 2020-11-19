@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class manager : MonoBehaviour
+public class Manager : MonoBehaviour
 {
-    netComs net = new netComs();
+    readonly NetComs net = new NetComs();
     public bool enableNetworking;
 
     public static int Width;
@@ -14,6 +14,7 @@ public class manager : MonoBehaviour
 
     public int boardWidth;
     public int boardHeight;
+    
 
     private void Awake()
     {
@@ -25,32 +26,35 @@ public class manager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         Width = boardWidth;
         Height = boardHeight;
-        playerSync.Init();
-        orbSync.Init();
+        PlayerSync.Init();
+        OrbSync.Init();
         net.Init(enableNetworking);
 
         PlayerData inital = new PlayerData(20, 0, 0, 0);
-        playerManager.AddPlayer(inital, 20, false);
+        PlayerManager.AddPlayer(inital, 20, false);
     }
 
     void Update()
     {
-        if(playerManager.ourPlayers.Count == 0)
+        //If we are dead, make us respawn
+        if(PlayerManager.ourPlayers.Count == 0)
         {
-            playerManager.ResetFile();
+            PlayerManager.ResetFile();
             Camera.main.transform.position = new Vector3(0, 0, Camera.main.transform.position.z);
             PlayerData inital = new PlayerData(20, 0, 0, 0);
-            playerManager.AddPlayer(inital, 20, false);
+            PlayerManager.AddPlayer(inital, 20, false);
         }
 
-
+        //If we push escape, take us to the menu
         if (Input.GetKeyDown("escape"))
         {
-            playerSync.HaltImmediately();
-            netComs.HaltImmediately();
-            orbSync.HaltImmediately();
+            LoadGame.errorText = "";
+            PlayerSync.HaltImmediately();
+            NetComs.HaltImmediately();
+            OrbSync.HaltImmediately();
             SceneManager.LoadScene("splash");
         }
     }
@@ -58,8 +62,17 @@ public class manager : MonoBehaviour
     //Called when the application closes, built in unity event handler
     void OnApplicationQuit()
     {
-        playerSync.HaltImmediately();
-        netComs.HaltImmediately();
-        orbSync.HaltImmediately();
+        PlayerSync.HaltImmediately();
+        NetComs.HaltImmediately();
+        OrbSync.HaltImmediately();
+    }
+
+    //Called by other classes to make the game return to the menu screen
+    public static void ErrorReturnToMenu()
+    {
+        PlayerSync.HaltImmediately();
+        NetComs.HaltImmediately();
+        OrbSync.HaltImmediately();
+        SceneManager.LoadScene("splash");
     }
 }

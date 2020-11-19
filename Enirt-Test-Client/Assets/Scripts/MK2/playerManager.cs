@@ -6,7 +6,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-public class playerManager : MonoBehaviour
+public class PlayerManager : MonoBehaviour
 {
     public static float cameraSpeed = 10;
     public static float cameraSlack = 2;
@@ -26,8 +26,10 @@ public class playerManager : MonoBehaviour
         ResetFile();
     }
 
+    //Adds players to the game instance
     public static void AddPlayer(PlayerData playerData, int size, bool glide)
     {
+        //Check to make sure the player hasnt already been added
         int playerId = 0;
         for(int i = 0; i < int.MaxValue; i++)
         {
@@ -38,24 +40,29 @@ public class playerManager : MonoBehaviour
             }
         }
 
+        //Create a player from the provided PlayerData
         Player player = new Player(playerData);
 
+        //Instatiate the player obejct and set its parameters
         player.gameObject = Instantiate(playerPrefab, new Vector3(player.XPos, player.YPos, player.ZPos), Quaternion.identity);
-        player.gameObject.GetComponent<eatDots>().size = size;
+        player.gameObject.GetComponent<EatDots>().size = size;
         player.gameObject.GetComponent<PlayerMovement>().Id = playerId;
         player.SetRecombine();
         player.Id = playerId;
 
+        //If the object needs to glide, let i know
         if(glide)
         {
             player.gameObject.GetComponent<PlayerMovement>().StartGlide();
         }
 
+        //Add the new player to our list of player
         ourPlayers.Add(playerId, player);
     }
 
     public static void RemovePlayer(int Id)
     {
+        //Remove the player with the specified id from our list and delete their object in game
         if (ourPlayers.ContainsKey(Id))
         {
             if (ourPlayers[Id].gameObject != null)
@@ -68,17 +75,20 @@ public class playerManager : MonoBehaviour
 
 
     // Start is called before the first frame update
+    //Creat the inital playr object
     void Start()
     {
         playerPrefab = playerObj;
     }
 
     // Update is called once per frame
+    //Look to see if any orbs can recombine
     void FixedUpdate()
     {
         CheckRecombines();
     }
 
+    //Move the in game camera
     void Update()
     {
         MoveCamera();
@@ -86,35 +96,48 @@ public class playerManager : MonoBehaviour
 
     void CheckRecombines()
     {
+        //Look at every player object
         var keys = ourPlayers.Keys.ToArray();
 
         foreach (int key in keys)
         {
             if (ourPlayers.ContainsKey(key))
             {
+                
                 Player player = ourPlayers[key];
                 if (player.currentPlayerCollisions.Count > 0)
                 {
+                    //Look at every collision that player is experiencing
                     foreach (int i in player.currentPlayerCollisions)
                     {
+
+                        //Look at every object the player is colliding with
                         if(ourPlayers.ContainsKey(i))
                         {
                             Player otherPlayer = ourPlayers[i];
 
+                            //Recombine if both objects are ready
                             if(player.recombineTime <= 0 && otherPlayer.recombineTime <= 0)
                             {
-                                player.gameObject.GetComponent<eatDots>().size += otherPlayer.gameObject.GetComponent<eatDots>().size;
+                                player.gameObject.GetComponent<EatDots>().size += otherPlayer.gameObject.GetComponent<EatDots>().size;
                                 player.SetRecombine();
+                                if (Manager.keyboardEnable)
+                                {
+                                    if (otherPlayer.Id == PlayerMovement.smallestPlayer.Id)
+                                    {
+                                        PlayerMovement.smallestPlayer = player;
+                                    }
+                                }
                                 RemovePlayer(otherPlayer.Id);
                             }
                         }
                     }
                 }
 
+                //Adjust the recombine timer
                 if(player.recombineTime > 0)
                 {
                     player.recombineTime -= Time.fixedDeltaTime;
-                    //Debug.Log(player.recombineTime);
                 }
             }
         }
@@ -122,6 +145,7 @@ public class playerManager : MonoBehaviour
 
     void MoveCamera()
     {
+        //Takes a weighted average of the player positions
         var keys = ourPlayers.Keys.ToArray();
 
         float totalX = 0;
@@ -135,6 +159,7 @@ public class playerManager : MonoBehaviour
         float maxY = float.MinValue;
 
 
+        //Calculate weighted average position
         foreach (int key in keys)
         {
             if(ourPlayers.ContainsKey(key))
@@ -167,7 +192,7 @@ public class playerManager : MonoBehaviour
         float wAvgX = totalX / totalS;
         float wAvgY = totalY / totalS;
 
-
+        //Zoom the camera based on the player's size
         float cameraViewHeight = Camera.main.orthographicSize * 2;
         float cameraViewWidth = cameraViewHeight * Camera.main.aspect;
 
@@ -184,6 +209,7 @@ public class playerManager : MonoBehaviour
         float offsetX = maxX - minX;
         float offsetY = maxY - minY;
 
+        //Adjust the camera's viewport
         if(offsetX >= cameraViewWidth * 0.6 || offsetY >= cameraViewHeight * 0.6)
         {
             Camera.main.orthographicSize += cameraZoomSpeed * Time.deltaTime;
@@ -196,6 +222,7 @@ public class playerManager : MonoBehaviour
             }
         }
 
+        //Position the camera
         Vector3 cameraGoalPos = new Vector3(wAvgX, wAvgY, Camera.main.transform.position.z);
 
         float cameraSpeedAdj = Vector2.Distance(Camera.main.transform.position, cameraGoalPos) * cameraSpeed * (1 / cameraSlack) * Time.deltaTime;

@@ -7,7 +7,7 @@ using UnityEngine.Timeline;
 using System.Timers;
 using System.Threading;
 
-public class netComs
+public class NetComs
 {
     public bool enableNetworking;
     static bool enableNet;
@@ -27,11 +27,21 @@ public class netComs
         {
             Debug.Log(IPAddress);
             //Connect to the server
-            networkStream = ConnectTCPClient(IPAddress, 8124);
-            socketId = int.Parse(receiveMessages(networkStream)[0]);
-            clockOffset = clockSync(networkStream);
-            //Tell the server we are ready to begin receiving player data
-            NBSendMessage(3, "0");
+            try
+            {
+                //Try to connect to the server
+                networkStream = ConnectTCPClient(IPAddress, 8124);
+                socketId = int.Parse(ReceiveMessages(networkStream)[0]);
+                clockOffset = ClockSync(networkStream);
+                //Tell the server we are ready to begin receiving player data
+                NBSendMessage(3, "0");
+            }
+            catch(Exception ex)
+            {
+                //If there is a problem, return to the menu
+                LoadGame.errorText = "There was a problem connecting to the server at: " + IPAddress;
+                Manager.ErrorReturnToMenu();
+            }
         }
 
         //Start the networking thread
@@ -74,7 +84,7 @@ public class netComs
             if (networkStream.DataAvailable)
             {
                 //receive all waiting messages
-                string[] messages = receiveMessages(networkStream);
+                string[] messages = ReceiveMessages(networkStream);
 
                 //iterate through each message
                 foreach (string singleMessage in messages)
@@ -86,31 +96,24 @@ public class netComs
                         string[] parts = singleMessage.Split('|');
                         if (parts[0] == "0")
                         {
-                            playerSync.ReceiveMessage(parts[1]);
+                            PlayerSync.ReceiveMessage(parts[1]);
                         }
                         else if (parts[0] == "1")
                         {
-                            orbSync.ReceiveOrbMessage(parts[1]);
+                            OrbSync.ReceiveOrbMessage(parts[1]);
                         }
                         else if (parts[0] == "2")
                         {
-                            orbSync.ReceiveSyncRequestMessage(parts[1]);
+                            OrbSync.ReceiveSyncRequestMessage(parts[1]);
                         }
                         else if (parts[0] == "3")
                         {
-                            orbSync.ReceiveSyncMessage(parts[1]);
+                            OrbSync.ReceiveSyncMessage(parts[1]);
                         }
                     }
                 }
             }
         }
-    }
-
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
     }
 
     NetworkStream ConnectTCPClient(String serverAddress, int port)
@@ -124,7 +127,7 @@ public class netComs
         return stream;
     }
 
-    static void sendMessage(String message, NetworkStream stream)
+    static void SendMessage(String message, NetworkStream stream)
     {
         // Translate the passed message into ASCII and store it as a Byte array.
         Byte[] data = System.Text.Encoding.ASCII.GetBytes(socketId + "," + message + "$");
@@ -133,7 +136,7 @@ public class netComs
         stream.Write(data, 0, data.Length);
     }
 
-    static String[] receiveMessages(NetworkStream stream)
+    static String[] ReceiveMessages(NetworkStream stream)
     {
         // Buffer to store the response bytes.
         Byte[] data = new Byte[150000];
@@ -152,10 +155,10 @@ public class netComs
 
     public static void NBSendMessage(int command, String data)
     {
-        sendMessage(command + "," + data, networkStream);
+        SendMessage(command + "," + data, networkStream);
     }
 
-    long clockSync(NetworkStream stream)
+    long ClockSync(NetworkStream stream)
     {
         int numPings = 5;
         double sumOfOffsets = 0;
@@ -164,8 +167,8 @@ public class netComs
         {
             long firstTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
 
-            sendMessage(1 + ",0", stream);
-            String reply = receiveMessages(stream)[0];
+            SendMessage(1 + ",0", stream);
+            String reply = ReceiveMessages(stream)[0];
 
             long secondTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
 

@@ -8,7 +8,7 @@ using System.Threading;
 using System;
 using System.Linq;
 
-public class orbSync
+public class OrbSync
 {
     static bool active = false;
     static System.Timers.Timer syncTimer;
@@ -114,7 +114,7 @@ public class orbSync
             //Create the message string
             string message = "3|";
 
-            var currentIds = objectManager.currentOrbs.Keys.ToArray(); //To array is used in case the source needs to be modified
+            var currentIds = ObjectManager.currentOrbs.Keys.ToArray(); //To array is used in case the source needs to be modified
             int counter = 0;
 
             foreach (long Id in currentIds)
@@ -125,7 +125,7 @@ public class orbSync
                     break;
                 }
 
-                OrbData current = objectManager.currentOrbs[Id];
+                OrbData current = ObjectManager.currentOrbs[Id];
                 message += current.XPos + ":";
                 message += current.YPos + ":";
                 message += current.Id + "?";
@@ -139,11 +139,11 @@ public class orbSync
             //Send the message to the server
             if(counter >= 5000 || message.Length > 149950)
             {
-                netComs.NBSendMessage(50, message);
+                NetComs.NBSendMessage(50, message);
             }
             else
             {
-                netComs.NBSendMessage(2, message);
+                NetComs.NBSendMessage(2, message);
             }
         }
     }
@@ -172,7 +172,7 @@ public class orbSync
             }
 
             //These create IEnumerable objects that can then be converted into arrays. 
-            var currentIds = objectManager.currentOrbs.Keys.ToArray(); //To array is used in case the source needs to be modified
+            var currentIds = ObjectManager.currentOrbs.Keys.ToArray(); //To array is used in case the source needs to be modified
             var incomingIds = incomingData.Keys; //To array is not used here because the source will not be modified
 
             //Removes all items in the second array from the first array
@@ -181,11 +181,11 @@ public class orbSync
 
             foreach (long Id in toAdd)
             {
-                objectManager.addOrbs.Add(incomingData[Id]);
+                ObjectManager.addOrbs.Add(incomingData[Id]);
             }
 
             //Append all of the ids in to remove to the list in object manager
-            objectManager.removeOrbs.Concat(toRemove);
+            ObjectManager.removeOrbs.Concat(toRemove);
         }
     }
     
@@ -203,14 +203,14 @@ public class orbSync
             {
                 string[] data = orb.Split(':');
 
-                float XPos = (float)Math.Round(float.Parse(data[0]) * manager.Width - (0.5f * manager.Width),2);
-                float YPos = (float)Math.Round(float.Parse(data[1]) * manager.Height- (0.5f * manager.Height),2);
+                float XPos = (float)Math.Round(float.Parse(data[0]) * Manager.Width - (0.5f * Manager.Width),2);
+                float YPos = (float)Math.Round(float.Parse(data[1]) * Manager.Height- (0.5f * Manager.Height),2);
                 long Id = long.Parse(data[2]);
 
 
                 //Debug.Log("Orb at (" + XPos + "," + YPos + ") and time " + Id);
 
-                objectManager.addOrbs.Add(new OrbData(Id, XPos, YPos));
+                ObjectManager.addOrbs.Add(new OrbData(Id, XPos, YPos));
             }
         }
     }
