@@ -22,7 +22,7 @@ public class EatDots : MonoBehaviour
         //Calculate the player's radius and scale their model accordingly
         float radius = Mathf.Sqrt(size / 50f / Mathf.PI);
         transform.localScale = new Vector3(radius, radius, transform.localScale.z);
-        PlayerManager.ourPlayers[GetComponent<PlayerMovement>().Id].Size = size;
+        playerManager.ourPlayers[GetComponent<PlayerMovement>().Id].Size = size;
         GetComponent<Rigidbody2D>().mass = size;
     }
 
@@ -32,7 +32,7 @@ public class EatDots : MonoBehaviour
         if (other.gameObject.tag == "orb")
         {
             //If it is an orb, eat it and increase the player's size
-            ObjectManager.removeOrbs.Add(other.gameObject.GetComponent<OrbId>().Id);
+            objectManager.removeOrbs.Add(other.gameObject.GetComponent<OrbId>().Id);
             size += 1;
         }
     }

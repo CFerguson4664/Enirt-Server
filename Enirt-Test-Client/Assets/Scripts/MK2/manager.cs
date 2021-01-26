@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Manager : MonoBehaviour
+public class manager : MonoBehaviour
 {
-    readonly NetComs net = new NetComs();
+    readonly netComs net = new netComs();
     public bool enableNetworking;
 
     public static int Width;
@@ -29,32 +29,32 @@ public class Manager : MonoBehaviour
 
         Width = boardWidth;
         Height = boardHeight;
-        PlayerSync.Init();
-        OrbSync.Init();
+        playerSync.Init();
+        orbSync.Init();
         net.Init(enableNetworking);
 
         PlayerData inital = new PlayerData(20, 0, 0, 0);
-        PlayerManager.AddPlayer(inital, 20, false);
+        playerManager.AddPlayer(inital, 20, false);
     }
 
     void Update()
     {
         //If we are dead, make us respawn
-        if(PlayerManager.ourPlayers.Count == 0)
+        if(playerManager.ourPlayers.Count == 0)
         {
-            PlayerManager.ResetFile();
+            playerManager.ResetFile();
             Camera.main.transform.position = new Vector3(0, 0, Camera.main.transform.position.z);
             PlayerData inital = new PlayerData(20, 0, 0, 0);
-            PlayerManager.AddPlayer(inital, 20, false);
+            playerManager.AddPlayer(inital, 20, false);
         }
 
         //If we push escape, take us to the menu
         if (Input.GetKeyDown("escape"))
         {
-            LoadGame.errorText = "";
-            PlayerSync.HaltImmediately();
-            NetComs.HaltImmediately();
-            OrbSync.HaltImmediately();
+            loadGame.errorText = "";
+            playerSync.HaltImmediately();
+            netComs.HaltImmediately();
+            orbSync.HaltImmediately();
             SceneManager.LoadScene("splash");
         }
     }
@@ -62,17 +62,17 @@ public class Manager : MonoBehaviour
     //Called when the application closes, built in unity event handler
     void OnApplicationQuit()
     {
-        PlayerSync.HaltImmediately();
-        NetComs.HaltImmediately();
-        OrbSync.HaltImmediately();
+        playerSync.HaltImmediately();
+        netComs.HaltImmediately();
+        orbSync.HaltImmediately();
     }
 
     //Called by other classes to make the game return to the menu screen
     public static void ErrorReturnToMenu()
     {
-        PlayerSync.HaltImmediately();
-        NetComs.HaltImmediately();
-        OrbSync.HaltImmediately();
+        playerSync.HaltImmediately();
+        netComs.HaltImmediately();
+        orbSync.HaltImmediately();
         SceneManager.LoadScene("splash");
     }
 }

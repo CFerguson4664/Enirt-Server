@@ -20,7 +20,7 @@ public class EatPlayer : MonoBehaviour
                 {
                     //Increase our size 
                     GetComponent<EatDots>().size += other.gameObject.GetComponent<MarkerEatDots>().size;
-                    ObjectManager.removePlayers.Add(new IdPair(other.gameObject.GetComponent<MarkerEatDots>().clientId, other.gameObject.GetComponent<MarkerEatDots>().playerId));
+                    objectManager.removePlayers.Add(new IdPair(other.gameObject.GetComponent<MarkerEatDots>().clientId, other.gameObject.GetComponent<MarkerEatDots>().playerId));
                 }
             }
             //If the opponents size is larger than our size
@@ -32,7 +32,7 @@ public class EatPlayer : MonoBehaviour
                 if(distance < radius)
                 {
                     other.gameObject.GetComponent<MarkerEatDots>().size += GetComponent<EatDots>().size;
-                    PlayerManager.RemovePlayer(GetComponent<PlayerMovement>().Id);
+                    playerManager.RemovePlayer(GetComponent<PlayerMovement>().Id);
                 }
             }
         }

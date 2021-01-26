@@ -7,7 +7,7 @@ using UnityEngine.Timeline;
 using System.Timers;
 using System.Threading;
 
-public class NetComs
+public class netComs
 {
     public bool enableNetworking;
     static bool enableNet;
@@ -39,8 +39,8 @@ public class NetComs
             catch(Exception ex)
             {
                 //If there is a problem, return to the menu
-                LoadGame.errorText = "There was a problem connecting to the server at: " + IPAddress;
-                Manager.ErrorReturnToMenu();
+                loadGame.errorText = "There was a problem connecting to the server at: " + IPAddress;
+                manager.ErrorReturnToMenu();
             }
         }
 
@@ -96,19 +96,19 @@ public class NetComs
                         string[] parts = singleMessage.Split('|');
                         if (parts[0] == "0")
                         {
-                            PlayerSync.ReceiveMessage(parts[1]);
+                            playerSync.ReceiveMessage(parts[1]);
                         }
                         else if (parts[0] == "1")
                         {
-                            OrbSync.ReceiveOrbMessage(parts[1]);
+                            orbSync.ReceiveOrbMessage(parts[1]);
                         }
                         else if (parts[0] == "2")
                         {
-                            OrbSync.ReceiveSyncRequestMessage(parts[1]);
+                            orbSync.ReceiveSyncRequestMessage(parts[1]);
                         }
                         else if (parts[0] == "3")
                         {
-                            OrbSync.ReceiveSyncMessage(parts[1]);
+                            orbSync.ReceiveSyncMessage(parts[1]);
                         }
                     }
                 }

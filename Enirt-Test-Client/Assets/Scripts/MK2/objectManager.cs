@@ -6,7 +6,7 @@ using System.Dynamic;
 using System.Linq;
 using UnityEngine;
 
-public class ObjectManager : MonoBehaviour
+public class objectManager : MonoBehaviour
 {
     //The template object used to represent other players
     public static GameObject marker;
@@ -155,7 +155,7 @@ public class ObjectManager : MonoBehaviour
         addOrbsActive = addOrbs;
         addOrbs = new List<OrbData>();
 
-        long time = NetComs.GetTime();
+        long time = netComs.GetTime();
 
         int counter = 0;
 
@@ -226,7 +226,7 @@ public class ObjectManager : MonoBehaviour
 
     static void InterpolatePlayer(PlayerData player)
     {
-        long time = NetComs.GetTime();
+        long time = netComs.GetTime();
         //Time since the position of the player was last received
         long timeSinceData = time - player.Time;
 

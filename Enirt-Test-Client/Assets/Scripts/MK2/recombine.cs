@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class Recombine : MonoBehaviour
+public class recombine : MonoBehaviour
 {
     //Store all of the collisions occuring each frame
     List<int> collisions = new List<int>();
@@ -14,10 +14,10 @@ public class Recombine : MonoBehaviour
     void FixedUpdate()
     {
         //If we still exist in the player list
-        if(PlayerManager.ourPlayers.ContainsKey(GetComponent<PlayerMovement>().Id)) 
+        if(playerManager.ourPlayers.ContainsKey(GetComponent<PlayerMovement>().Id)) 
         {
             //update all of collisions
-            PlayerManager.ourPlayers[GetComponent<PlayerMovement>().Id].currentPlayerCollisions = collisions;
+            playerManager.ourPlayers[GetComponent<PlayerMovement>().Id].currentPlayerCollisions = collisions;
             collisions = new List<int>();
         }
     }
