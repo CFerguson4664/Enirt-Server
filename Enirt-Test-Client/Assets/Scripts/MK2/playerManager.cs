@@ -6,7 +6,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-public class PlayerManager : MonoBehaviour
+public class playerManager : MonoBehaviour
 {
     public static float cameraSpeed = 10;
     public static float cameraSlack = 2;
@@ -121,7 +121,7 @@ public class PlayerManager : MonoBehaviour
                             {
                                 player.gameObject.GetComponent<EatDots>().size += otherPlayer.gameObject.GetComponent<EatDots>().size;
                                 player.SetRecombine();
-                                if (Manager.keyboardEnable)
+                                if (manager.keyboardEnable)
                                 {
                                     if (otherPlayer.Id == PlayerMovement.smallestPlayer.Id)
                                     {

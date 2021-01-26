@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoadGame : MonoBehaviour
+public class loadGame : MonoBehaviour
 {
     static string IP;
     public static string errorText = "";
@@ -19,7 +19,7 @@ public class LoadGame : MonoBehaviour
     {
         //Set necessary parameters and opens the game scene
         PlayerMovement.keyboardEnable = GameObject.Find("KeyboardToggle").GetComponent<Toggle>().isOn;
-        NetComs.IPAddress = IP;
+        netComs.IPAddress = IP;
         SceneManager.LoadScene("game");
     }
 

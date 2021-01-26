@@ -33,7 +33,7 @@ public class MarkerEatDots : MonoBehaviour
         if (other.gameObject.tag == "orb")
         {
             //If it is an orb, eat it and increase the player's size
-            ObjectManager.removeOrbs.Add(other.gameObject.GetComponent<OrbId>().Id);
+            objectManager.removeOrbs.Add(other.gameObject.GetComponent<OrbId>().Id);
             size += 1;
         }
     }

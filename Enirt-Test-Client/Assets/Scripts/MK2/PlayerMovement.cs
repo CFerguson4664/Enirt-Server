@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public ParticleSystem boost;
     public float speed;
     public float slack;
     public float leftBound;
@@ -33,6 +34,8 @@ public class PlayerMovement : MonoBehaviour
 	
 	//Multiplying by time.deltaTime compensates for varying frame rates
 	float adjustedSpeed;
+
+    float boostCost = 0;
 	
     public int Id;
 
@@ -47,12 +50,14 @@ public class PlayerMovement : MonoBehaviour
             if(GetComponent<EatDots>().size >= EatDots.minSize * 2)
             {
                 GetComponent<EatDots>().size /= 2;
-                PlayerManager.ourPlayers[Id].Size = GetComponent<EatDots>().size;
+                playerManager.ourPlayers[Id].Size = GetComponent<EatDots>().size;
                 PlayerData newPlayer = new PlayerData(currentSize / 2, currentPosition.x, currentPosition.y, currentPosition.z);
-                PlayerManager.ourPlayers[Id].SetRecombine();
-                PlayerManager.AddPlayer(newPlayer, GetComponent<EatDots>().size, true);
+                playerManager.ourPlayers[Id].SetRecombine();
+                playerManager.AddPlayer(newPlayer, GetComponent<EatDots>().size, true);
             }
         }
+
+        
 
         //If we are supposed to glide, then glide
         if (glide)
@@ -63,9 +68,43 @@ public class PlayerMovement : MonoBehaviour
         {
             //calculate the player's speed
 			adjustedSpeed = effectiveSpeed * Time.deltaTime;
-			
-			// Keyboard controls
-			if(keyboardEnable==true){
+
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                if (GetComponent<EatDots>().size > EatDots.minSize)
+                {
+                    boost.Play();
+                }
+            }
+
+            if (Input.GetKey(KeyCode.E)) 
+            {
+                if(GetComponent<EatDots>().size > EatDots.minSize)
+                {
+                    boostCost += (0.8f * Time.deltaTime);
+
+                    if (boostCost >= 1)
+                    {
+                        GetComponent<EatDots>().size -= 1;
+                        boostCost -= 1;
+                    }
+
+
+                    adjustedSpeed = adjustedSpeed * 1.3f;
+                }
+                else
+                {
+                    boost.Stop();
+                }
+            }
+
+            if(Input.GetKeyUp(KeyCode.E))
+            {
+                boost.Stop();
+            }
+
+            // Keyboard controls
+            if (keyboardEnable==true){
 				Vector2 target = transform.position;
 
                 
@@ -75,7 +114,7 @@ public class PlayerMovement : MonoBehaviour
                 //Figure out which player object is in charge
                 if(smallestPlayer == null || Input.GetKey(KeyCode.R))
                 {
-                    foreach (Player player in PlayerManager.ourPlayers.Values)
+                    foreach (Player player in playerManager.ourPlayers.Values)
                     {
                         if (player.Size < smallestSize)
                         {
@@ -114,7 +153,7 @@ public class PlayerMovement : MonoBehaviour
 				
                 //Move the player object
                 transform.position = Vector2.MoveTowards(transform.position, target, adjustedSpeed);
-				PlayerManager.ourPlayers[Id].UpdateData(NetComs.GetTime(), GetComponent<EatDots>().size, transform.position.x, transform.position.y, transform.position.z);
+				playerManager.ourPlayers[Id].UpdateData(netComs.GetTime(), GetComponent<EatDots>().size, transform.position.x, transform.position.y, transform.position.z);
 				currentSize = GetComponent<EatDots>().size;
 				
 			}
@@ -155,7 +194,7 @@ public class PlayerMovement : MonoBehaviour
 
             //Translate the player object by adjusted speed in the needed direction
             transform.position = Vector2.MoveTowards(transform.position, glideDirection, adjustedSpeed);
-            PlayerManager.ourPlayers[Id].UpdateData(NetComs.GetTime(), GetComponent<EatDots>().size, transform.position.x, transform.position.y, transform.position.z);
+            playerManager.ourPlayers[Id].UpdateData(netComs.GetTime(), GetComponent<EatDots>().size, transform.position.x, transform.position.y, transform.position.z);
 
             currentPosition = transform.position;
             glideTimer -= Time.deltaTime;
@@ -181,7 +220,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         currentPosition = transform.position;
-        PlayerManager.ourPlayers[Id].UpdateData(NetComs.GetTime(), GetComponent<EatDots>().size, transform.position.x, transform.position.y, transform.position.z);
+        playerManager.ourPlayers[Id].UpdateData(netComs.GetTime(), GetComponent<EatDots>().size, transform.position.x, transform.position.y, transform.position.z);
         currentSize = GetComponent<EatDots>().size;
     }
 

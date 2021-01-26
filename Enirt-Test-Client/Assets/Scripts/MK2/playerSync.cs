@@ -9,7 +9,7 @@ using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-public class PlayerSync
+public class playerSync
 {
     static bool active = false;
     static System.Timers.Timer syncTimer;
@@ -64,16 +64,16 @@ public class PlayerSync
     static void SendPosition()
     {
         //Sends the positions of all of the player's objects to the server
-        var keys = PlayerManager.ourPlayers.Keys.ToArray();
+        var keys = playerManager.ourPlayers.Keys.ToArray();
 
-        string message = "0|" + NetComs.socketId + "!";
-        long currentTime = NetComs.GetTime();
+        string message = "0|" + netComs.socketId + "!";
+        long currentTime = netComs.GetTime();
 
         foreach (int key in keys)
         {
-            if(PlayerManager.ourPlayers.ContainsKey(key))
+            if(playerManager.ourPlayers.ContainsKey(key))
             {
-                Player player = PlayerManager.ourPlayers[key];
+                Player player = playerManager.ourPlayers[key];
 
                 message += player.Id + ":";
                 message += currentTime + ":";
@@ -91,7 +91,7 @@ public class PlayerSync
         //Debug.Log("sending " + message);
 
         //Send the message to the server
-        NetComs.NBSendMessage(2, message);
+        netComs.NBSendMessage(2, message);
     }
 
     static void ReadMessages()
@@ -131,9 +131,9 @@ public class PlayerSync
             int[] removePlayers;
 
 
-            if (ObjectManager.currentClients.ContainsKey(clientId))
+            if (objectManager.currentClients.ContainsKey(clientId))
             {
-                var currentPlayersIds = ObjectManager.currentClients[clientId].Players.Keys.ToArray();
+                var currentPlayersIds = objectManager.currentClients[clientId].Players.Keys.ToArray();
                 var incomingPlayersIds = incomingPlayers.Keys;
 
                 addPlayers = incomingPlayersIds.Except(currentPlayersIds).ToArray();
@@ -147,20 +147,20 @@ public class PlayerSync
 
             foreach (int Id in addPlayers)
             {
-                ObjectManager.addPlayers.Add(incomingPlayers[Id]);
+                objectManager.addPlayers.Add(incomingPlayers[Id]);
             }
 
             foreach (int Id in removePlayers)
             {
                 Debug.Log("removing player");
-                ObjectManager.removePlayers.Add(new IdPair(clientId, Id));
+                objectManager.removePlayers.Add(new IdPair(clientId, Id));
             }
 
             foreach(int Id in incomingPlayers.Keys)
             {
-                if (ObjectManager.currentClients.ContainsKey(incomingPlayers[Id].ClientId))
+                if (objectManager.currentClients.ContainsKey(incomingPlayers[Id].ClientId))
                 {
-                    ClientData client = ObjectManager.currentClients[incomingPlayers[Id].ClientId];
+                    ClientData client = objectManager.currentClients[incomingPlayers[Id].ClientId];
 
                     if(client.Players.ContainsKey(incomingPlayers[Id].Id))
                     {
