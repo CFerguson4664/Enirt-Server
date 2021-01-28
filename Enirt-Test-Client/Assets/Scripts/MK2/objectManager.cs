@@ -108,7 +108,8 @@ public class objectManager : MonoBehaviour
                 playerData.gameObject.GetComponent<MarkerEatDots>().size = playerData.Size;
                 playerData.gameObject.GetComponent<MarkerEatDots>().clientId = playerData.ClientId;
                 playerData.gameObject.GetComponent<MarkerEatDots>().playerId = playerData.Id;
-                playerData.gameObject.GetComponent<MarkerEatDots>().name = playerData.name;
+                playerData.gameObject.GetComponent<MarkerEatDots>().name.text = playerData.name;
+                playerData.gameObject.GetComponent<SpriteRenderer>().color = playerData.color;
                 currentClients[playerData.ClientId].Players.Add(playerData.Id, playerData);
             }
         }

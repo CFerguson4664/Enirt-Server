@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MarkerEatDots : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class MarkerEatDots : MonoBehaviour
 
     public int clientId;
     public int playerId;
+    public Text name;
 
     // Start is called before the first frame update
     void Start()

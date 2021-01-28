@@ -79,8 +79,10 @@ public class playerSync
                 message += currentTime + ":";
                 message += player.XPos + ":";
                 message += player.YPos + ":";
-                message += player.Size + "?";
-
+                message += player.Size + "+";
+                message += player.name + ":";
+                message += player.color.r + ":";
+                message += player.color.g + "?"; ;
             }
         }
 
@@ -126,6 +128,7 @@ public class playerSync
                 string clientName = vals[5];
                 float clientRed = float.Parse(vals[6]);
                 float clientGreen = float.Parse(vals[7]);
+             
 
                 incomingPlayers.Add(playerId, new PlayerData(playerId, clientId, time, size, x, y, z, clientName, clientRed, clientGreen));
             }
