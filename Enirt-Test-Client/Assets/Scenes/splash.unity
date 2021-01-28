@@ -498,6 +498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be7f1a31d73d56e48bf7ffc4f1abd517, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  colorSlider: {fileID: 837788303}
 --- !u!4 &405128217
 Transform:
   m_ObjectHideFlags: 0
