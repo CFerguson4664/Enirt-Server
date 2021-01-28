@@ -108,6 +108,7 @@ public class objectManager : MonoBehaviour
                 playerData.gameObject.GetComponent<MarkerEatDots>().size = playerData.Size;
                 playerData.gameObject.GetComponent<MarkerEatDots>().clientId = playerData.ClientId;
                 playerData.gameObject.GetComponent<MarkerEatDots>().playerId = playerData.Id;
+                playerData.gameObject.GetComponent<MarkerEatDots>().name = playerData.name;
                 currentClients[playerData.ClientId].Players.Add(playerData.Id, playerData);
             }
         }
@@ -264,8 +265,12 @@ public class PlayerData
     public int Id { get; set; }
     public int ClientId { get; set; }
 
+    public string name {get; set; }
+    public UnityEngine.Color color { get; set; }
+
     //Store the time that this data was updated
     public long Time { get; set; }
+
     //Store the previoustime that this data was updateda
     public long LastTime { get; set; }
 
@@ -291,16 +296,18 @@ public class PlayerData
         gameObject = null;
     }
 
-    public PlayerData(int sizeIn, float xPosIn, float yPosIn, float zPosIn)
+    public PlayerData(int sizeIn, float xPosIn, float yPosIn, float zPosIn, string clientName, UnityEngine.Color clientColor)
     {
         Size = sizeIn;
         XPos = xPosIn;
         YPos = yPosIn;
         ZPos = zPosIn;
         gameObject = null;
+        name = clientName;
+        color = clientColor;
     }
 
-    public PlayerData(int idIn, int clientIdIn, long timeIn, int sizeIn, float xPosIn, float yPosIn, float zPosIn)
+    public PlayerData(int idIn, int clientIdIn, long timeIn, int sizeIn, float xPosIn, float yPosIn, float zPosIn, string clientName, float clientRed, float clientGreen)
     {
         Id = idIn;
         ClientId = clientIdIn;
@@ -312,6 +319,8 @@ public class PlayerData
         LastXPos = xPosIn;
         LastYPos = yPosIn;
         gameObject = null;
+        name = clientName;
+        color = new UnityEngine.Color(clientRed, clientGreen, 0.0f);
     }
 
     public void UpdateData(long time, int size, float x, float y, float z)

@@ -19,6 +19,15 @@ public class loadGame : MonoBehaviour
     {
         //Set necessary parameters and opens the game scene
         PlayerMovement.keyboardEnable = GameObject.Find("KeyboardToggle").GetComponent<Toggle>().isOn;
+        manager.clientName = GameObject.Find("CharacterName").GetComponent<InputField>().text;
+
+        float sliderValue = GameObject.Find("CharacterColorSlider").GetComponent<Slider>().value;
+        float red = 1.0f - sliderValue;
+        float green = 0.0f + sliderValue;
+        manager.clientColor = new Color(red, green, 0.0f);
+
+        Debug.Log(manager.clientName);
+
         netComs.IPAddress = IP;
         SceneManager.LoadScene("game");
     }

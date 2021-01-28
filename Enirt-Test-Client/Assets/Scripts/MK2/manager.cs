@@ -8,6 +8,9 @@ public class manager : MonoBehaviour
     readonly netComs net = new netComs();
     public bool enableNetworking;
 
+    public static Color clientColor;
+    public static string clientName;
+
     public static int Width;
     public static int Height;
     public static bool keyboardEnable;
@@ -33,7 +36,7 @@ public class manager : MonoBehaviour
         orbSync.Init();
         net.Init(enableNetworking);
 
-        PlayerData inital = new PlayerData(20, 0, 0, 0);
+        PlayerData inital = new PlayerData(20, 0, 0, 0, clientName, clientColor);
         playerManager.AddPlayer(inital, 20, false);
     }
 
@@ -44,7 +47,7 @@ public class manager : MonoBehaviour
         {
             playerManager.ResetFile();
             Camera.main.transform.position = new Vector3(0, 0, Camera.main.transform.position.z);
-            PlayerData inital = new PlayerData(20, 0, 0, 0);
+            PlayerData inital = new PlayerData(20, 0, 0, 0, clientName, clientColor);
             playerManager.AddPlayer(inital, 20, false);
         }
 

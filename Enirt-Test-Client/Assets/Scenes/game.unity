@@ -263,7 +263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93b41870a16d08143b836924e4888400, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableNetworking: 1
+  enableNetworking: 0
   boardWidth: 96
   boardHeight: 96
 --- !u!114 &538632378

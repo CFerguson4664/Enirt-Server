@@ -36,7 +36,7 @@ public class netComs
                 //Tell the server we are ready to begin receiving player data
                 NBSendMessage(3, "0");
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 //If there is a problem, return to the menu
                 loadGame.errorText = "There was a problem connecting to the server at: " + IPAddress;

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 263823380797312148}
   - component: {fileID: 5902061189865466182}
   m_Layer: 5
-  m_Name: Text
+  m_Name: playerName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4940,6 +4940,7 @@ MonoBehaviour:
   rightBound: 48
   topBound: 48
   bottomBound: -48
+  name: {fileID: 5902061189865466182}
   glideTime: 0.5
   glideSpeed: 25
   currentPosition: {x: 0, y: 0, z: 0}

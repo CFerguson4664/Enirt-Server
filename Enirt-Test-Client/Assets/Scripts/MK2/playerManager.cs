@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using System;
 using System.Linq;
+using UnityEngine.UI;
 
 public class playerManager : MonoBehaviour
 {
@@ -13,8 +14,8 @@ public class playerManager : MonoBehaviour
     public static float cameraZoomSpeed = 0.5f;
 
     public static Dictionary<int, Player> ourPlayers = new Dictionary<int, Player>();
-    public  static GameObject playerPrefab;
-    public  GameObject playerObj;
+    public static GameObject playerPrefab;
+    public GameObject playerObj;
 
     public static void ResetFile()
     {
@@ -47,6 +48,9 @@ public class playerManager : MonoBehaviour
         player.gameObject = Instantiate(playerPrefab, new Vector3(player.XPos, player.YPos, player.ZPos), Quaternion.identity);
         player.gameObject.GetComponent<EatDots>().size = size;
         player.gameObject.GetComponent<PlayerMovement>().Id = playerId;
+        player.gameObject.GetComponent<PlayerMovement>().name.text = playerData.name;
+        player.gameObject.GetComponent<SpriteRenderer>().color = playerData.color;
+
         player.SetRecombine();
         player.Id = playerId;
 
@@ -242,12 +246,12 @@ public class Player : PlayerData
         recombineTime = (Math.Pow(Math.Log(Size * 1d + 2), 1.7) * 3);
     }
 
-    public Player(int sizeIn, float xIn, float yIn, float zIn) : base(sizeIn, xIn, yIn, zIn)
+    public Player(int sizeIn, float xIn, float yIn, float zIn, string clientData, Color clientColor) : base(sizeIn, xIn, yIn, zIn, clientData, clientColor)
     {
 
     }
 
-    public Player(PlayerData data) : base(data.Size, data.XPos, data.YPos, data.ZPos)
+    public Player(PlayerData data) : base(data.Size, data.XPos, data.YPos, data.ZPos, data.name, data.color)
     {
 
     }

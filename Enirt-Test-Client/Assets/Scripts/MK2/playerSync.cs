@@ -123,8 +123,11 @@ public class playerSync
                 float y = float.Parse(vals[3]);
                 float z = 0f;
                 int size = int.Parse(vals[4]);
+                string clientName = vals[5];
+                float clientRed = float.Parse(vals[6]);
+                float clientGreen = float.Parse(vals[7]);
 
-                incomingPlayers.Add(playerId, new PlayerData(playerId, clientId, time, size, x, y, z));
+                incomingPlayers.Add(playerId, new PlayerData(playerId, clientId, time, size, x, y, z, clientName, clientRed, clientGreen));
             }
 
             int[] addPlayers;

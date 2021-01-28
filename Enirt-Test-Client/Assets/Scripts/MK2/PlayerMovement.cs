@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     public float topBound;
     public float bottomBound;
 
+    public Text name;
     public float glideTime;
     public float glideSpeed;
 
@@ -51,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 GetComponent<EatDots>().size /= 2;
                 playerManager.ourPlayers[Id].Size = GetComponent<EatDots>().size;
-                PlayerData newPlayer = new PlayerData(currentSize / 2, currentPosition.x, currentPosition.y, currentPosition.z);
+                PlayerData newPlayer = new PlayerData(currentSize / 2, currentPosition.x, currentPosition.y, currentPosition.z, manager.clientName, manager.clientColor);
                 playerManager.ourPlayers[Id].SetRecombine();
                 playerManager.AddPlayer(newPlayer, GetComponent<EatDots>().size, true);
             }
