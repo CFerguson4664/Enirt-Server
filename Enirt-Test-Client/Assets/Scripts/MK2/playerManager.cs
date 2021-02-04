@@ -62,6 +62,8 @@ public class playerManager : MonoBehaviour
 
         //Add the new player to our list of player
         ourPlayers.Add(playerId, player);
+        scoreboard.addScoreboardPlayer(player);
+
     }
 
     public static void RemovePlayer(int Id)
@@ -74,12 +76,13 @@ public class playerManager : MonoBehaviour
                 Destroy(ourPlayers[Id].gameObject);
             }
             ourPlayers.Remove(Id);
+            scoreboard.removeScoreboardPlayer(Id);
         }
     }
 
 
     // Start is called before the first frame update
-    //Creat the inital playr object
+    //Create the initial player object
     void Start()
     {
         playerPrefab = playerObj;
