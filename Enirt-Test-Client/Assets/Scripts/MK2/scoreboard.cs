@@ -2,122 +2,208 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 
 public class scoreboard : MonoBehaviour
 {
+    public static bool scoreboardActive = false;
 
     public static GameObject playerScorePrefabStatic;
-    public static GameObject uiTransformStatic;
     public static Vector3 scoreboardLocationStatic;
     public static GameObject scoreboardLabelStatic;
+    public static GameObject CanvasStatic;
 
     public GameObject playerScorePrefab;
-    public GameObject uiTransform;
     public GameObject scoreboardLabel;
+    public GameObject Canvas;
 
-    private static List<GameObject> playerScores = new List<GameObject>();
+
+    public static List<ScoreData> scoreDatas = new List<ScoreData>();
+    private static List<Score> playerScores = new List<Score>();
 
     void Start()
     {
+        CanvasStatic = Canvas;
         playerScorePrefabStatic = playerScorePrefab;
-        uiTransformStatic = uiTransform;
         scoreboardLabelStatic = scoreboardLabel;
         scoreboardLocationStatic = scoreboardLabelStatic.transform.position;
         scoreboardLocationStatic.x += 100;
-
-        // add client to scoreboard
-        playerScorePrefabStatic.GetComponent<scoreComponent>().playerName.text = playerManager.ourPlayers[0].name;
-        playerScorePrefabStatic.GetComponent<scoreComponent>().playerScore.text = playerManager.ourPlayers[0].Size.ToString();
-
-        scoreboardLocationStatic.y -= 78;
-        playerScores.Add(Instantiate(playerScorePrefabStatic, scoreboardLocationStatic, Quaternion.identity, uiTransformStatic.transform));
-
-        // test score player
-        // addScoreboardPlayer(playerManager.ourPlayers[0]);
+        scoreboardLocationStatic.y -= 79;
     }
+
 
     // Update is called once per frame
     void Update()
     {
-        if(playerScores.Count == 0)
+        if(Input.GetKeyDown(KeyCode.Tab))
         {
-            return;
-        }
-
-        // updates client player
-        int score = 0;
-        foreach (KeyValuePair<int, Player> p in playerManager.ourPlayers)
-        {
-            try {
-                playerScores[0].GetComponent<scoreComponent>().playerName.text = p.Value.name;
-                score += p.Value.Size;
-            }
-            catch
+            scoreboardLabelStatic.SetActive(true);
+            foreach (Score s in playerScores)
             {
-                removeScoreboardPlayer(0);
+                s.textBox.SetActive(true);
             }
         }
-        playerScores[0].GetComponent<scoreComponent>().playerScore.text = score.ToString();
 
-        // updates enemy players
-        int i = 1;
-        foreach(ClientData data in objectManager.currentClients.Values)
+        if(Input.GetKey(KeyCode.Tab))
+        {
+            GetScoreData();
+            DisplayScores();
+        }
+
+        if(Input.GetKeyUp(KeyCode.Tab))
+        {
+            scoreboardLabelStatic.SetActive(false);
+            foreach (Score s in playerScores)
+            {
+                s.textBox.SetActive(false);
+            }
+        }
+    }
+
+    public static void DisplayScores()
+    {
+        List<ScoreData> sortedScores = scoreDatas.OrderByDescending(score => score.score).ToList();
+
+        for(int i = 0; i < sortedScores.Count; i++)
+        {
+            if(playerScores.Count > i)
+            {
+                playerScores[0].UpdateScore(sortedScores[i]);
+            }
+            else if(playerScores.Count < 10)
+            {
+                playerScores.Add(new Score(playerScorePrefabStatic, CanvasStatic, scoreboardLocationStatic, sortedScores[i], (i + 1)));
+                scoreboardLocationStatic.y -= 79;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        if(playerScores.Count > sortedScores.Count)
+        {
+            for(int j = sortedScores.Count; j < playerScores.Count; j++)
+            {
+                Destroy(playerScores[j].textBox);
+                playerScores.RemoveAt(j);
+                scoreboardLocationStatic.y += 79;
+            }
+        }
+    }
+
+    public static void GetScoreData()
+    {
+        scoreDatas = new List<ScoreData>();
+
+        int score = 0;
+        string name = "";
+        Color color = Color.black;
+
+        foreach (Player player in playerManager.ourPlayers.Values)
+        {
+            score += player.Size;
+            name = player.name;
+            color = player.color;
+        }
+        scoreDatas.Add(new ScoreData(score, name, color));
+
+        foreach (ClientData data in objectManager.currentClients.Values)
         {
             score = 0;
-            foreach (KeyValuePair<int, PlayerData> p in data.Players)
+            foreach (PlayerData playerData in data.Players.Values)
             {
-                try
-                {
-                    playerScores[0].GetComponent<scoreComponent>().playerName.text = p.Value.name;
-                    score += p.Value.Size;
-                }
-                catch
-                {
-                    removeScoreboardPlayer(i);
-                }
+                score += playerData.Size;
+                name = playerData.name;
+                color = playerData.color;
             }
-            playerScores[i].GetComponent<scoreComponent>().playerScore.text = score.ToString();
-            i++;
+            scoreDatas.Add(new ScoreData(score, name, color));
         }
-
     }
+}
 
-    public static void addScoreboardPlayer(PlayerData newPlayer)
+
+public class ScoreData 
+{
+    public int score;
+    public string name;
+    public Color color;
+
+    public ScoreData(int score, string name, Color color)
     {
-        Debug.Log("adding scoreboard...");
-        try
-        {
-            playerScorePrefabStatic.GetComponent<scoreComponent>().playerName.text = newPlayer.name;
-            
-            int score = 0;
-            foreach (KeyValuePair<int, PlayerData> p in objectManager.currentClients[newPlayer.ClientId].Players)
-            {
-                try
-                {
-                    score += p.Value.Size;
-                }
-                catch
-                {
-                    //removeScoreboardPlayer(i);
-                }
-            }
-            playerScorePrefabStatic.GetComponent<scoreComponent>().playerScore.text = score.ToString();
-            playerScorePrefabStatic.GetComponent<scoreComponent>().playerName.text = newPlayer.name;
-
-            scoreboardLocationStatic.y -= 78;
-            playerScores.Add(Instantiate(playerScorePrefabStatic,scoreboardLocationStatic, Quaternion.identity, uiTransformStatic.transform));
-        }
-        catch
-        {
-            return;
-        }
+        this.score = score;
+        this.name = name;
+        this.color = color;
     }
+}
 
-    public static void removeScoreboardPlayer(int i)
+
+public class Score
+{
+    public int score;
+    public string name;
+    public Color color;
+    public int position;
+
+    public GameObject textBox;
+
+    public Score(GameObject prefab, GameObject canvas, Vector3 transform, ScoreData data, int position)
     {
-        playerScores.RemoveAt(i);
-        scoreboardLocationStatic.y += 78;
+        textBox = GameObject.Instantiate(prefab, transform, Quaternion.identity, canvas.transform);
+        SetName(data.name);
+        SetScore(data.score);
+        SetColor(data.color);
+        SetPosition(position);
     }
 
+    public Score(GameObject prefab, GameObject canvas, Vector3 transform) 
+    {
+        textBox = GameObject.Instantiate(prefab, transform, Quaternion.identity, canvas.transform);
+    }
+
+    public Score(GameObject prefab, GameObject canvas, Vector3 transform, string name, Color color, int score, int position)
+    {
+        textBox = GameObject.Instantiate(prefab, transform, Quaternion.identity, canvas.transform);
+        SetName(name);
+        SetScore(score);
+        SetColor(color);
+        SetPosition(position);
+    }
+
+    public void UpdateScore(ScoreData data)
+    {
+        SetName(data.name);
+        SetColor(data.color);
+        SetScore(data.score);
+    }
+
+    public void SetName(string name)
+    {
+        this.name = name;
+        textBox.GetComponent<scoreComponent>().playerName.text = position.ToString() + ". " + name;
+    }
+
+    public void SetScore(int score)
+    {
+        this.score = score;
+        textBox.GetComponent<scoreComponent>().playerScore.text = score.ToString();
+    }
+
+    public void SetColor(Color color)
+    {
+        this.color = color;
+        textBox.GetComponent<scoreComponent>().playerName.color = color;
+        textBox.GetComponent<scoreComponent>().playerScore.color = color;
+    }
+
+    public void SetPosition(int position)
+    {
+        this.position = position;
+    }
+
+    public void SetPosition(Vector3 pos)
+    {
+        textBox.transform.position = pos;
+    }
 }

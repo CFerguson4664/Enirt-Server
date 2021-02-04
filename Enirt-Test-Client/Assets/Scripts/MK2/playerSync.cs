@@ -114,7 +114,7 @@ public class playerSync
         {
             foreach (string message in beingRead)
             {
-                Debug.Log("reading " + message);
+                //Debug.Log("reading " + message);
 
                 string[] getId = message.Split('!');
 

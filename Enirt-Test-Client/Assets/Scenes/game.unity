@@ -200,8 +200,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1869457124}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -217,6 +216,7 @@ GameObject:
   - component: {fileID: 538632377}
   - component: {fileID: 538632378}
   - component: {fileID: 538632374}
+  - component: {fileID: 538632376}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -252,6 +252,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &538632376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 538632373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6f16fd71504e374d8e43a61c63afa01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerScorePrefab: {fileID: 4531337946223050474, guid: 9a130b4737ef55340aba37ddac7e0c38,
+    type: 3}
+  scoreboardLabel: {fileID: 548441740}
+  Canvas: {fileID: 1869457123}
 --- !u!114 &538632377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -299,7 +315,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &548441741
 RectTransform:
   m_ObjectHideFlags: 0
@@ -617,7 +633,6 @@ GameObject:
   - component: {fileID: 1869457127}
   - component: {fileID: 1869457126}
   - component: {fileID: 1869457125}
-  - component: {fileID: 1869457128}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -637,8 +652,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 548441741}
-  m_Father: {fileID: 519420032}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -705,19 +720,3 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!114 &1869457128
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1869457123}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6f16fd71504e374d8e43a61c63afa01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerScorePrefab: {fileID: 4531337946223050474, guid: 9a130b4737ef55340aba37ddac7e0c38,
-    type: 3}
-  uiTransform: {fileID: 1869457123}
-  scoreboardLabel: {fileID: 548441740}

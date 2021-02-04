@@ -98,8 +98,6 @@ public class objectManager : MonoBehaviour
             {
                 //Add it to our list
                 currentClients.Add(playerData.ClientId, new ClientData(playerData.ClientId));
-
-                scoreboard.addScoreboardPlayer(playerData);
             }
 
             //If the marker doesnt exist, add it

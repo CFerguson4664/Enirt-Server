@@ -74,7 +74,6 @@ public class playerManager : MonoBehaviour
                 Destroy(ourPlayers[Id].gameObject);
             }
             ourPlayers.Remove(Id);
-            scoreboard.removeScoreboardPlayer(Id);
         }
     }
 
