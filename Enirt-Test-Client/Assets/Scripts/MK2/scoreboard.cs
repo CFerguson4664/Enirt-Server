@@ -69,7 +69,7 @@ public class scoreboard : MonoBehaviour
         {
             if(playerScores.Count > i)
             {
-                playerScores[0].UpdateScore(sortedScores[i]);
+                playerScores[i].UpdateScore(sortedScores[i]);
             }
             else if(playerScores.Count < 10)
             {
