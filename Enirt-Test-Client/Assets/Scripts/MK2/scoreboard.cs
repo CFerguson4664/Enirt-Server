@@ -55,7 +55,7 @@ public class scoreboard : MonoBehaviour
             }
             catch
             {
-                //removeScoreboardPlayer(i);
+                removeScoreboardPlayer(0);
             }
         }
         playerScores[0].GetComponent<scoreComponent>().playerScore.text = score.ToString();
@@ -95,7 +95,6 @@ public class scoreboard : MonoBehaviour
             {
                 try
                 {
-                    playerScores[0].GetComponent<scoreComponent>().playerName.text = p.Value.name;
                     score += p.Value.Size;
                 }
                 catch
@@ -104,6 +103,7 @@ public class scoreboard : MonoBehaviour
                 }
             }
             playerScorePrefabStatic.GetComponent<scoreComponent>().playerScore.text = score.ToString();
+            playerScorePrefabStatic.GetComponent<scoreComponent>().playerName.text = newPlayer.name;
 
             scoreboardLocationStatic.y -= 78;
             playerScores.Add(Instantiate(playerScorePrefabStatic,scoreboardLocationStatic, Quaternion.identity, uiTransformStatic.transform));
