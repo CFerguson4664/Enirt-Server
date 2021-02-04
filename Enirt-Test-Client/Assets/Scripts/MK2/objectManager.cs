@@ -98,6 +98,8 @@ public class objectManager : MonoBehaviour
             {
                 //Add it to our list
                 currentClients.Add(playerData.ClientId, new ClientData(playerData.ClientId));
+
+                scoreboard.addScoreboardPlayer(playerData);
             }
 
             //If the marker doesnt exist, add it
@@ -112,6 +114,7 @@ public class objectManager : MonoBehaviour
                 playerData.gameObject.GetComponent<SpriteRenderer>().color = playerData.color;
                 currentClients[playerData.ClientId].Players.Add(playerData.Id, playerData);
             }
+
         }
     }
 

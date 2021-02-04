@@ -45,29 +45,65 @@ public class scoreboard : MonoBehaviour
             return;
         }
 
-        int i = 0;
+        // updates client player
+        int score = 0;
         foreach (KeyValuePair<int, Player> p in playerManager.ourPlayers)
         {
             try {
-                playerScores[i].GetComponent<scoreComponent>().playerName.text = p.Value.name;
-                playerScores[i].GetComponent<scoreComponent>().playerScore.text = p.Value.Size.ToString();
-                i++; 
+                playerScores[0].GetComponent<scoreComponent>().playerName.text = p.Value.name;
+                score += p.Value.Size;
             }
             catch
             {
-                removeScoreboardPlayer(i);
+                //removeScoreboardPlayer(i);
             }
+        }
+        playerScores[0].GetComponent<scoreComponent>().playerScore.text = score.ToString();
+
+        // updates enemy players
+        int i = 1;
+        foreach(ClientData data in objectManager.currentClients.Values)
+        {
+            score = 0;
+            foreach (KeyValuePair<int, PlayerData> p in data.Players)
+            {
+                try
+                {
+                    playerScores[0].GetComponent<scoreComponent>().playerName.text = p.Value.name;
+                    score += p.Value.Size;
+                }
+                catch
+                {
+                    removeScoreboardPlayer(i);
+                }
+            }
+            playerScores[i].GetComponent<scoreComponent>().playerScore.text = score.ToString();
+            i++;
         }
 
     }
 
-    public static void addScoreboardPlayer(Player newPlayer)
+    public static void addScoreboardPlayer(PlayerData newPlayer)
     {
         Debug.Log("adding scoreboard...");
         try
         {
             playerScorePrefabStatic.GetComponent<scoreComponent>().playerName.text = newPlayer.name;
-            playerScorePrefabStatic.GetComponent<scoreComponent>().playerScore.text = newPlayer.Size.ToString();
+            
+            int score = 0;
+            foreach (KeyValuePair<int, PlayerData> p in objectManager.currentClients[newPlayer.ClientId].Players)
+            {
+                try
+                {
+                    playerScores[0].GetComponent<scoreComponent>().playerName.text = p.Value.name;
+                    score += p.Value.Size;
+                }
+                catch
+                {
+                    //removeScoreboardPlayer(i);
+                }
+            }
+            playerScorePrefabStatic.GetComponent<scoreComponent>().playerScore.text = score.ToString();
 
             scoreboardLocationStatic.y -= 78;
             playerScores.Add(Instantiate(playerScorePrefabStatic,scoreboardLocationStatic, Quaternion.identity, uiTransformStatic.transform));

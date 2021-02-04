@@ -62,8 +62,6 @@ public class playerManager : MonoBehaviour
 
         //Add the new player to our list of player
         ourPlayers.Add(playerId, player);
-        scoreboard.addScoreboardPlayer(player);
-
     }
 
     public static void RemovePlayer(int Id)
