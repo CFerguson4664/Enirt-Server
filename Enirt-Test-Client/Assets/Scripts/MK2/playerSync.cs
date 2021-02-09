@@ -178,6 +178,7 @@ public class playerSync
                     if (objectManager.currentClients.ContainsKey(incomingPlayers[Id].ClientId))
                     {
                         ClientData client = objectManager.currentClients[incomingPlayers[Id].ClientId];
+                        client.LastChangeTime = netComs.GetTime();
 
                         if (client.Players.ContainsKey(incomingPlayers[Id].Id))
                         {

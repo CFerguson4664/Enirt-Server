@@ -105,7 +105,7 @@ public class objectManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         AddPlayers();
         RemovePlayers();
@@ -116,6 +116,28 @@ public class objectManager : MonoBehaviour
 
         AddIndObj();
         RemoveIndObj();
+
+        CheckClients();
+    }
+
+
+    static void CheckClients()
+    {
+        foreach(ClientData client in currentClients.Values)
+        {
+            if(netComs.GetTime() - client.LastChangeTime > 5000)
+            {
+                foreach(PlayerData data in client.Players.Values)
+                {
+                    if(data.gameObject != null)
+                    {
+                        Destroy(data.gameObject);
+                    }
+                }
+
+                currentClients.Remove(client.Id);
+            }
+        }
     }
 
     static void AddPlayers()
@@ -130,7 +152,7 @@ public class objectManager : MonoBehaviour
             if (!currentClients.ContainsKey(playerData.ClientId))
             {
                 //Add it to our list
-                currentClients.Add(playerData.ClientId, new ClientData(playerData.ClientId));
+                currentClients.Add(playerData.ClientId, new ClientData(playerData.ClientId, netComs.GetTime()));
             }
 
             //If the marker doesnt exist, add it
@@ -144,6 +166,7 @@ public class objectManager : MonoBehaviour
                 playerData.gameObject.GetComponent<MarkerEatDots>().name.text = playerData.name;
                 playerData.gameObject.GetComponent<SpriteRenderer>().color = playerData.color;
                 currentClients[playerData.ClientId].Players.Add(playerData.Id, playerData);
+                currentClients[playerData.ClientId].LastChangeTime = netComs.GetTime();
             }
 
         }
@@ -198,7 +221,7 @@ public class objectManager : MonoBehaviour
         foreach (OrbData orbData in addOrbsActive)
         {
             //Only process so many orbs per frame to prevent lag
-            if(counter > 5)
+            if(counter > 10)
             {
                 addOrbs.Concat(addOrbsActive);
                 break;
@@ -234,7 +257,7 @@ public class objectManager : MonoBehaviour
         foreach (long Id in removeOrbsActive)
         {
             //Only process so many orbs per frame to prevent lag
-            if (counter > 5)
+            if (counter > 10)
             {
                 removeOrbs.Concat(removeOrbsActive);
                 break;
@@ -320,11 +343,25 @@ public class objectManager : MonoBehaviour
         float yPos = player.YPos + (yVelocity * timeSinceData);
         float zPos = player.ZPos;
 
+
+        float estVelocity = (float)Math.Sqrt(Math.Pow(xVelocity, 2) + Math.Pow(yVelocity, 2)) * 1000;
+
+        Debug.Log("Est Velocity: " + estVelocity);
+
+        //Position the camera
+        Vector3 playerGoalPos = new Vector3(xPos, yPos, player.gameObject.transform.position.z);
+
+        Debug.Log("Goal Position: " + playerGoalPos);
+
         //Check if the player has a marker associated with them
-        if(player.gameObject != null)
+        if (player.gameObject != null)
         {
             //If they do update its position
-            player.gameObject.transform.position = new Vector3(xPos, yPos, zPos);
+            float playerSpeedAdj = Vector2.Distance(player.gameObject.transform.position, playerGoalPos) * (estVelocity + 0.01f) * 15f * Time.deltaTime;
+
+            Debug.Log("Est Velocity Adj: " + playerSpeedAdj);
+
+            player.gameObject.transform.position = Vector3.MoveTowards(player.gameObject.transform.position, playerGoalPos, playerSpeedAdj);
             player.gameObject.GetComponent<MarkerEatDots>().size = player.Size;
         }
         else
@@ -402,9 +439,11 @@ public class PlayerData
 
     public void UpdateData(long time, int size, float x, float y, float z)
     {
-        Size = size;
+        LastTime = Time;
         LastXPos = XPos;
         LastYPos = YPos;
+
+        Size = size;
         Time = time;
         XPos = x;
         YPos = y;
@@ -463,6 +502,8 @@ public class ClientData
 {
     public int Id { get; set; }
 
+    public long LastChangeTime;
+
     public Dictionary<int, PlayerData> Players = new Dictionary<int, PlayerData>();
 
     public ClientData()
@@ -470,9 +511,10 @@ public class ClientData
 
     }
 
-    public ClientData(int IdIn)
+    public ClientData(int IdIn, long time)
     {
         Id = IdIn;
+        LastChangeTime = time;
     }
 }
 
