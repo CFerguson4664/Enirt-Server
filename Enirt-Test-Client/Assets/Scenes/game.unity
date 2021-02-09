@@ -298,6 +298,8 @@ MonoBehaviour:
   markerObj: {fileID: 3716766472000882435, guid: 3dd9195b4db0c7d44929d1b82949533d,
     type: 3}
   orbObj: {fileID: 4223203312260077131, guid: b119b2ace8cc8f84ca29f04f325eca5e, type: 3}
+  indObjObj: {fileID: 5793569463022736842, guid: 86437a642abfa8a48a0f87864f54ce35,
+    type: 3}
 --- !u!1 &548441740
 GameObject:
   m_ObjectHideFlags: 0

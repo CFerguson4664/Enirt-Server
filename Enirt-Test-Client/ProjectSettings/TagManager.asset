@@ -6,6 +6,7 @@ TagManager:
   tags:
   - orb
   - marker
+  - IndObj
   layers:
   - Default
   - TransparentFX

@@ -15,14 +15,17 @@ public class objectManager : MonoBehaviour
     public static GameObject orb;
     public GameObject orbObj;
 
+    public static GameObject indObj;
+    public GameObject indObjObj;
+
     //Store the player data from each client in a dictionary indexed with the player ids.
     public static Dictionary<int, ClientData> currentClients = new Dictionary<int, ClientData>();
 
-    //Stores the ids of the orbs to be removed the next cycle
+    //Stores the ids of the players to be removed the next cycle
     public static List<PlayerData> addPlayers = new List<PlayerData>();
     private static List<PlayerData> addPlayersActive = new List<PlayerData>();
 
-    //Stores the ids of the orbs to be added the next cycle
+    //Stores the ids of the players to be removed the next cycle
     public static List<IdPair> removePlayers = new List<IdPair>();
     private static List<IdPair> removePlayersActive = new List<IdPair>();
 
@@ -35,9 +38,22 @@ public class objectManager : MonoBehaviour
     public static List<OrbData> addOrbs = new List<OrbData>();
     private static List<OrbData> addOrbsActive = new List<OrbData>();
 
-    //Stores the ids of the orbs to be added the next cycle
+    //Stores the ids of the orbs to be removed the next cycle
     public static List<long> removeOrbs = new List<long>();
     private static List<long> removeOrbsActive = new List<long>();
+
+
+
+    //Stores the orbs currently being displayed in a dictionary indexed with the IndObj timestamps.
+    public static Dictionary<long, IndObjData> currentIndObj = new Dictionary<long, IndObjData>();
+
+    //Stores the ids of the orbs to be removed the next cycle
+    public static List<IndObjData> addIndObj = new List<IndObjData>();
+    private static List<IndObjData> addIndObjActive = new List<IndObjData>();
+
+    //Stores the ids of the orbs to be removed the next cycle
+    public static List<long> removeIndObj = new List<long>();
+    private static List<long> removeIndObjActive = new List<long>();
 
     public static void ResetFile()
     {
@@ -64,7 +80,20 @@ public class objectManager : MonoBehaviour
         //Stores the ids of the orbs to be added the next cycle
         removeOrbs = new List<long>();
         removeOrbsActive = new List<long>();
-    }
+
+
+
+        //Stores the orbs currently being displayed in a dictionary indexed with the orb timestamps.
+        currentIndObj = new Dictionary<long, IndObjData>();
+
+        //Stores the ids of the orbs to be removed the next cycle
+        addIndObj = new List<IndObjData>();
+        addIndObjActive = new List<IndObjData>();
+
+        //Stores the ids of the orbs to be removed the next cycle
+        removeIndObj = new List<long>();
+        removeIndObjActive = new List<long>();
+}
 
     // Start is called before the first frame update
     void Start()
@@ -72,6 +101,7 @@ public class objectManager : MonoBehaviour
         ResetFile();
         orb = orbObj;
         marker = markerObj;
+        indObj = indObjObj;
     }
 
     // Update is called once per frame
@@ -83,6 +113,9 @@ public class objectManager : MonoBehaviour
 
         AddOrbs();
         RemoveOrbs();
+
+        AddIndObj();
+        RemoveIndObj();
     }
 
     static void AddPlayers()
@@ -181,10 +214,6 @@ public class objectManager : MonoBehaviour
                     orbData.gameObject.GetComponent<OrbId>().Id = orbData.Id;
                     currentOrbs.Add(orbData.Id, orbData);
                 }
-                else
-                {
-                    addOrbs.Add(orbData);
-                }
             }
             else
             {
@@ -224,6 +253,52 @@ public class objectManager : MonoBehaviour
             }
 
             counter++;
+        }
+    }
+
+    static void AddIndObj()
+    {
+        //Add orb objects to the game instances
+        addIndObjActive = addIndObj;
+        addIndObj = new List<IndObjData>();
+
+        foreach (IndObjData indObjData in addIndObjActive)
+        {
+            //If we dont already have the orb, then add it
+            if (!currentIndObj.ContainsKey(indObjData.Id))
+            {
+                //set the orb's parameters
+                indObjData.gameObject = Instantiate(indObj, new Vector3(indObjData.XPos, indObjData.YPos, indObjData.ZPos), Quaternion.identity);
+                indObjData.gameObject.GetComponent<OrbId>().Id = indObjData.Id;
+
+                //Calculate the IndObj's radius and scale their model accordingly
+                float radius = Mathf.Sqrt(indObjData.Size / 50f / Mathf.PI);
+                indObjData.gameObject.transform.localScale = new Vector3(radius, radius, indObjData.gameObject.transform.localScale.z);
+
+                currentIndObj.Add(indObjData.Id, indObjData);
+            }
+        }
+    }
+
+    static void RemoveIndObj()
+    {
+        removeIndObjActive = removeIndObj;
+        removeIndObj = new List<long>();
+
+        foreach (long Id in removeIndObjActive)
+        {
+            //Remove the IndObjs
+            if (currentIndObj.ContainsKey(Id))
+            {
+                if (currentIndObj[Id].gameObject != null)
+                {
+                    //Delete their game objects
+                    Destroy(currentIndObj[Id].gameObject);
+                }
+
+                //Remove them from our list
+                currentIndObj.Remove(Id);
+            }
         }
     }
 
@@ -356,6 +431,31 @@ public class OrbData
         XPos = XPosIn;
         YPos = YPosIn;
         ZPos = 0;
+    }
+}
+
+public class IndObjData
+{
+    public long Id { get; set; }
+    public float XPos { get; set; }
+    public float YPos { get; set; }
+    public float ZPos { get; set; }
+    public int Size { get; set; }
+
+    public GameObject gameObject { get; set; }
+
+    public IndObjData()
+    {
+
+    }
+
+    public IndObjData(long IdIn, float XPosIn, float YPosIn, int SizeIn)
+    {
+        Id = IdIn;
+        XPos = XPosIn;
+        YPos = YPosIn;
+        ZPos = 0;
+        Size = SizeIn;
     }
 }
 

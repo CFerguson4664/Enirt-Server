@@ -17,12 +17,6 @@ public class manager : MonoBehaviour
 
     public int boardWidth;
     public int boardHeight;
-    
-
-    private void Awake()
-    {
-        
-    }
 
     //This script is used to allow uniy to start and stop the asynchronous networking functionalities
 
@@ -34,12 +28,14 @@ public class manager : MonoBehaviour
         Height = boardHeight;
         playerSync.Init();
         orbSync.Init();
+        indObjSync.Init();
         net.Init(enableNetworking);
 
         PlayerData inital = new PlayerData(20, 0, 0, 0, clientName, clientColor);
         playerManager.AddPlayer(inital, 20, false);
     }
 
+    //Update is run every frame
     void Update()
     {
         //If we are dead, make us respawn
@@ -68,6 +64,7 @@ public class manager : MonoBehaviour
         playerSync.HaltImmediately();
         netComs.HaltImmediately();
         orbSync.HaltImmediately();
+        indObjSync.HaltImmediately();
     }
 
     //Called by other classes to make the game return to the menu screen
@@ -76,6 +73,7 @@ public class manager : MonoBehaviour
         playerSync.HaltImmediately();
         netComs.HaltImmediately();
         orbSync.HaltImmediately();
+        indObjSync.HaltImmediately();
         SceneManager.LoadScene("splash");
     }
 }

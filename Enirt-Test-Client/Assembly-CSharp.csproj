@@ -69,6 +69,8 @@
     <Compile Include="Assets\Scripts\MK2\MarkerEatDots.cs" />
     <Compile Include="Assets\Scripts\MK2\OrbId.cs" />
     <Compile Include="Assets\Scripts\MK2\PlayerMovement.cs" />
+    <Compile Include="Assets\Scripts\MK2\indObjEatOrb.cs" />
+    <Compile Include="Assets\Scripts\MK2\indObjSync.cs" />
     <Compile Include="Assets\Scripts\MK2\manager.cs" />
     <Compile Include="Assets\Scripts\MK2\netComs.cs" />
     <Compile Include="Assets\Scripts\MK2\objectManager.cs" />

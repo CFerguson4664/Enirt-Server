@@ -1,5 +1,6 @@
 const net = require('net');
 
+const numIndObj = 100;
 const orbsPerSecond = 20;
 const orbsFullSyncDelay = 20000; //ms
 
@@ -103,7 +104,7 @@ function parseMessage(message) {
 //Sends a message to the client with the given socketId
 function sendMessage(message, socketId) {
     //TO DO
-    //Function to send a meeage to the client
+    //Function to send a message to the client
 
 }
 
@@ -205,6 +206,13 @@ function readySocket(socketId) {
             socket[3] = true;
             //Request a client to send the current list of orbs
             requestFullOrbSync();
+
+            if(sockets.length == 1) {
+                requestGenIndObj();
+            } 
+            else {
+                requestFullIndObjSync();
+            }
         }
     })
 }
@@ -242,10 +250,29 @@ function relayOthers(message, senderId) {
 }
 
 function requestFullOrbSync() {
-    console.log('Requesting Sync')
+    console.log('Requesting Orb Sync');
 
-    var syncMessage = '2|sync'
+    var syncMessage = '2|sync';
     if(sockets.length > 0){
+        sockets[0][0].write(syncMessage + "$");
+    }
+}
+
+function requestFullIndObjSync() {
+    console.log('Requesting IndObj Sync');
+
+    var syncMessage = '5|sync';
+    if(sockets.length > 0) {
+        sockets[0][0].write(syncMessage + "$");
+    }
+}
+
+function requestGenIndObj() {
+    console.log('Requesting Gen IndObj');
+
+    var syncMessage = '4|' + numIndObj;
+
+    if(sockets.length > 0) {
         sockets[0][0].write(syncMessage + "$");
     }
 }
@@ -257,28 +284,37 @@ setInterval(function() {
 }, 1000);
 
 setInterval(function() {
+    if(sockets.length > 0) {
+        removeDeadSockets();
 
-    var time  = Date.now();
+        var time  = Date.now();
 
-    var randMessage = '1|'
-    randMessage +=  Math.random().toFixed(2);
-    randMessage += ":" + Math.random().toFixed(2);
-    randMessage += ":" + time.toString();
+        var randMessage = '1|'
+        randMessage +=  Math.random().toFixed(2);
+        randMessage += ":" + Math.random().toFixed(2);
+        randMessage += ":" + time.toString();
 
-    //Send two random numbers for each orb
-    for (var i = 1; i < orbsPerSecond; i++) {
-        randMessage += "?" + Math.random().toFixed(4);
-        randMessage += ":" + Math.random().toFixed(4);
-        randMessage += ":" + (time + (1000 / orbsPerSecond) * i).toFixed(0);
-    }
-
-    //Send the numbers to all of the sockets
-    sockets.forEach(function(socket) {
-        console.log('Sending orb loop')
-        if(!socket[0].destroyed && socket[3]) {
-            socket[0].write(randMessage + "$");
+        //Send two random numbers for each orb
+        for (var i = 1; i < orbsPerSecond; i++) {
+            randMessage += "?" + Math.random().toFixed(4);
+            randMessage += ":" + Math.random().toFixed(4);
+            randMessage += ":" + (time + (1000 / orbsPerSecond) * i).toFixed(0);
         }
-    });
+
+        //Send the numbers to all of the sockets
+        sockets.forEach(function(socket) {
+            console.log('Sending orb loop')
+            if(!socket[0].destroyed && socket[3]) {
+                socket[0].write(randMessage + "$");
+            }
+        });
+    }
+    
 }, 1000);
 
-setInterval(function() { requestFullOrbSync() }, orbsFullSyncDelay);
+setInterval(function() { 
+    if(sockets.length > 0) {
+        removeDeadSockets();
+        requestFullOrbSync(); 
+    }
+}, orbsFullSyncDelay);

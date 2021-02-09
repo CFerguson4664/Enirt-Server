@@ -110,6 +110,14 @@ public class netComs
                         {
                             orbSync.ReceiveSyncMessage(parts[1]);
                         }
+                        else if (parts[0] == "4")
+                        {
+                            indObjSync.ReceiveGenMessage(parts[1]);
+                        }
+                        else if (parts[0] == "5") 
+                        {
+                            indObjSync.ReceiveSyncMessage(parts[1]);
+                        }
                     }
                 }
             }
