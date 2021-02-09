@@ -109,7 +109,7 @@ public class indObjSync
             Debug.Log("Generating IndObj Sync Data");
 
             //Create the message string
-            string message = "5|";
+            string message = "6|";
 
             var currentIds = objectManager.currentIndObj.Keys.ToArray(); //To array is used in case the source needs to be modified
             int counter = 0;

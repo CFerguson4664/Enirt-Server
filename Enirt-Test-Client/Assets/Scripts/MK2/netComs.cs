@@ -116,6 +116,10 @@ public class netComs
                         }
                         else if (parts[0] == "5") 
                         {
+                            indObjSync.ReceiveSyncRequestMessage(parts[1]);
+                        }
+                        else if (parts[0] == "6")
+                        {
                             indObjSync.ReceiveSyncMessage(parts[1]);
                         }
                     }
