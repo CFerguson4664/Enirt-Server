@@ -79,7 +79,7 @@ public class playerManager : MonoBehaviour
 
 
     // Start is called before the first frame update
-    //Creat the inital playr object
+    //Create the initial player object
     void Start()
     {
         playerPrefab = playerObj;

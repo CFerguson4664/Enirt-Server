@@ -3,14 +3,17 @@ ScriptsOnlyBuild:
     Assembly-CSharp.dll:
     - EatDots
     - EatPlayer
-    - LoadGame
-    - Manager
     - MarkerEatDots
-    - ObjectManager
     - OrbId
-    - PlayerManager
     - PlayerMovement
-    - Recombine
+    - indObjEatOrb
+    - loadGame
+    - manager
+    - objectManager
+    - playerManager
+    - recombine
+    - scoreComponent
+    - scoreboard
     Unity.2D.Animation.Editor.dll:
     - UnityEditor.U2D.Animation.BoneGizmo
     Unity.2D.Tilemap.Editor.dll:
@@ -33,6 +36,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.Image
     - UnityEngine.UI.InputField
+    - UnityEngine.UI.Slider
     - UnityEngine.UI.Text
     - UnityEngine.UI.Toggle
   sceneClasses:
@@ -60,40 +64,58 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11252}
+      Script: {instanceID: 11232}
     - Class: 114
-      Script: {instanceID: 11328}
+      Script: {instanceID: 11254}
     - Class: 114
-      Script: {instanceID: 11332}
+      Script: {instanceID: 11330}
     - Class: 114
-      Script: {instanceID: 12266}
+      Script: {instanceID: 11334}
     - Class: 114
-      Script: {instanceID: 12466}
+      Script: {instanceID: 11602}
     - Class: 114
-      Script: {instanceID: 12856}
+      Script: {instanceID: 12190}
     - Class: 114
-      Script: {instanceID: 12878}
+      Script: {instanceID: 12270}
     - Class: 114
-      Script: {instanceID: 13026}
+      Script: {instanceID: 12470}
     - Class: 114
-      Script: {instanceID: 13740}
+      Script: {instanceID: 12816}
     - Class: 114
-      Script: {instanceID: 14338}
+      Script: {instanceID: 12862}
     - Class: 114
-      Script: {instanceID: 14352}
+      Script: {instanceID: 12884}
     - Class: 114
-      Script: {instanceID: 14412}
+      Script: {instanceID: 13032}
     - Class: 114
-      Script: {instanceID: 14908}
+      Script: {instanceID: 13746}
+    - Class: 114
+      Script: {instanceID: 13862}
+    - Class: 114
+      Script: {instanceID: 13942}
+    - Class: 114
+      Script: {instanceID: 14348}
+    - Class: 114
+      Script: {instanceID: 14362}
+    - Class: 114
+      Script: {instanceID: 14422}
     - Class: 115
+      Script: {instanceID: 0}
+    - Class: 128
       Script: {instanceID: 0}
     - Class: 157
       Script: {instanceID: 0}
     - Class: 196
       Script: {instanceID: 0}
+    - Class: 198
+      Script: {instanceID: 0}
+    - Class: 199
+      Script: {instanceID: 0}
     - Class: 212
       Script: {instanceID: 0}
     - Class: 213
+      Script: {instanceID: 0}
+    - Class: 222
       Script: {instanceID: 0}
     - Class: 223
       Script: {instanceID: 0}
@@ -117,25 +139,27 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11252}
+      Script: {instanceID: 11232}
     - Class: 114
-      Script: {instanceID: 11458}
+      Script: {instanceID: 11254}
     - Class: 114
-      Script: {instanceID: 11548}
+      Script: {instanceID: 11460}
     - Class: 114
       Script: {instanceID: 11602}
     - Class: 114
-      Script: {instanceID: 12266}
+      Script: {instanceID: 12270}
     - Class: 114
-      Script: {instanceID: 12974}
+      Script: {instanceID: 12980}
     - Class: 114
-      Script: {instanceID: 13266}
+      Script: {instanceID: 13272}
     - Class: 114
-      Script: {instanceID: 13740}
+      Script: {instanceID: 13746}
     - Class: 114
-      Script: {instanceID: 14352}
+      Script: {instanceID: 14362}
     - Class: 114
-      Script: {instanceID: 14372}
+      Script: {instanceID: 14382}
+    - Class: 114
+      Script: {instanceID: 14404}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -153,6 +177,12 @@ ScriptsOnlyBuild:
     - Class: 224
       Script: {instanceID: 0}
   scriptHashData:
+  - hash:
+      serializedVersion: 2
+      Hash: aeb62f729c52c814dec86c47dcac1471
+    assemblyName: UnityEngine.UI.dll
+    namespaceName: UnityEngine.UI
+    className: Text
   - hash:
       serializedVersion: 2
       Hash: 4bc4346a71a8df53a6b106f68ef3a190
@@ -182,10 +212,10 @@ ScriptsOnlyBuild:
       Hash: 72949f1fc29b431f654bff1bd2d28c00
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
-    className: Manager
+    className: manager
   - hash:
       serializedVersion: 2
-      Hash: a6e780b50b26767d31e6ca52ae912e5c
+      Hash: 9b5c62f441605e20f15bbb418e2cbf32
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: MarkerEatDots
@@ -203,10 +233,10 @@ ScriptsOnlyBuild:
     className: PlayerQuitHandler
   - hash:
       serializedVersion: 2
-      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+      Hash: 6788c10bd4d74780601232de4a8f4c5f
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
-    className: LoadGame
+    className: loadGame
   - hash:
       serializedVersion: 2
       Hash: c3d3430df9e3ea95e3e3d587961390fb
@@ -219,12 +249,6 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: ActivationTrack
-  - hash:
-      serializedVersion: 2
-      Hash: aeb62f729c52c814dec86c47dcac1471
-    assemblyName: UnityEngine.UI.dll
-    namespaceName: UnityEngine.UI
-    className: Text
   - hash:
       serializedVersion: 2
       Hash: 499fd23433e68e265d153aa6b95d0047
@@ -365,6 +389,12 @@ ScriptsOnlyBuild:
     className: Shadow
   - hash:
       serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: indObjEatOrb
+  - hash:
+      serializedVersion: 2
       Hash: cc4274b586df3c02688bac01b88bd16c
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.EventSystems
@@ -410,7 +440,7 @@ ScriptsOnlyBuild:
       Hash: b915bb45f1d10b0d009ec6e7e0fb5cd6
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
-    className: PlayerManager
+    className: playerManager
   - hash:
       serializedVersion: 2
       Hash: d4020bafcd3ccbb5601a6e6c8ac78be0
@@ -437,6 +467,12 @@ ScriptsOnlyBuild:
     className: TMP_SpriteAnimator
   - hash:
       serializedVersion: 2
+      Hash: 4e9ab1d798690a52e164a4d46e5fad35
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: scoreboard
+  - hash:
+      serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: UnityEngine.TestRunner.dll
     namespaceName: UnityEngine.TestTools.TestRunner.Callbacks
@@ -449,7 +485,7 @@ ScriptsOnlyBuild:
     className: EatDots
   - hash:
       serializedVersion: 2
-      Hash: 0c2edf4493fbeecd8cbef2677ce47244
+      Hash: 5eba95b2d32d3cb3be5cbb3bbf3bf662
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: PlayerMovement
@@ -476,7 +512,7 @@ ScriptsOnlyBuild:
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
-    className: Recombine
+    className: recombine
   - hash:
       serializedVersion: 2
       Hash: 5ad4aa237d47ac2bab17bacb672edf7a
@@ -567,6 +603,18 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.TestRunner.dll
     namespaceName: UnityEngine.TestTools
     className: BeforeAfterTestCommandState
+  - hash:
+      serializedVersion: 2
+      Hash: e3db102f808297030df6478e4213d0bb
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: OrbId
+  - hash:
+      serializedVersion: 2
+      Hash: 2afcc2aab7015a0c441b941d2e6e09be
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: scoreComponent
   - hash:
       serializedVersion: 2
       Hash: c3d3430df9e3ea95e3e3d587961390fb
@@ -671,10 +719,10 @@ ScriptsOnlyBuild:
     className: Slider
   - hash:
       serializedVersion: 2
-      Hash: 766635883d1c37aabd721ab8ef32d6ba
+      Hash: c554cf71f6889ccf4fa9babebd094887
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
-    className: ObjectManager
+    className: objectManager
   - hash:
       serializedVersion: 2
       Hash: 0fd6822f6177297bd0eb4d83cc7a9030
@@ -687,14 +735,8 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: PlayableTrack
-  - hash:
-      serializedVersion: 2
-      Hash: e3db102f808297030df6478e4213d0bb
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: OrbId
   platform: 19
   scenePathNames:
   - Assets/Scenes/splash.unity
   - Assets/Scenes/game.unity
-  playerPath: C:/Users/overk/OneDrive - Trine University/SE353-01/Enirt/Enirt.exe
+  playerPath: C:/Users/overk/Desktop/Enirt/Enirt.exe

@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using UnityEditor;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Timers;
 using System.Threading;
@@ -109,7 +106,7 @@ public class orbSync
 
         foreach (string request in beingReadSyncRequest)
         {
-            Debug.Log("Generating Sync Data");
+            Debug.Log("Generating Orb Sync Data");
 
             //Create the message string
             string message = "3|";
